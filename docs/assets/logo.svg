@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="188" height="36" viewBox="0 0 188 36" role="img" aria-label="OSO Organised">
+  <rect x="0" y="4" width="28" height="28" rx="8" fill="#FEB555"/>
+  <circle cx="14" cy="18" r="7" fill="none" stroke="#101585" stroke-width="3"/>
+  <text x="36" y="24" font-family="Outfit, system-ui, sans-serif" font-size="18" font-weight="700" fill="#ffffff">OSO</text>
+  <text x="79" y="24" font-family="Outfit, system-ui, sans-serif" font-size="18" font-weight="400" fill="#CA90AF">Organised</text>
+</svg>

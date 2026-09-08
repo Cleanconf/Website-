@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Illustration of a tidy client list with names, addresses and notes">
+  <rect width="640" height="480" fill="#F9F9F9"/>
+  <rect x="60" y="50" width="520" height="380" rx="16" fill="#ffffff" stroke="#E0E0E0"/>
+  <rect x="90" y="82" width="150" height="18" rx="9" fill="#101585"/>
+  <g>
+    <rect x="90" y="128" width="460" height="70" rx="10" fill="#F9F9F9" stroke="#E0E0E0"/>
+    <circle cx="128" cy="163" r="16" fill="#CA90AF"/>
+    <rect x="160" y="146" width="170" height="12" rx="6" fill="#101585"/>
+    <rect x="160" y="168" width="240" height="9" rx="4.5" fill="#a0a1ce"/>
+  </g>
+  <g>
+    <rect x="90" y="212" width="460" height="70" rx="10" fill="#F9F9F9" stroke="#E0E0E0"/>
+    <circle cx="128" cy="247" r="16" fill="#FEB555"/>
+    <rect x="160" y="230" width="140" height="12" rx="6" fill="#101585"/>
+    <rect x="160" y="252" width="220" height="9" rx="4.5" fill="#a0a1ce"/>
+  </g>
+  <g>
+    <rect x="90" y="296" width="460" height="70" rx="10" fill="#F9F9F9" stroke="#E0E0E0"/>
+    <circle cx="128" cy="331" r="16" fill="#a0a1ce"/>
+    <rect x="160" y="314" width="180" height="12" rx="6" fill="#101585"/>
+    <rect x="160" y="336" width="200" height="9" rx="4.5" fill="#a0a1ce"/>
+  </g>
+</svg>

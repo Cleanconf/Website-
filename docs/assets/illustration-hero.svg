@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="520" viewBox="0 0 640 520" role="img" aria-label="Illustration of the OSO Organised app on a phone showing today's bookings">
+  <rect width="640" height="520" fill="#a0a1ce"/>
+  <rect x="220" y="40" width="200" height="440" rx="28" fill="#101585"/>
+  <rect x="234" y="66" width="172" height="388" rx="14" fill="#F9F9F9"/>
+  <rect x="248" y="86" width="90" height="14" rx="7" fill="#101585"/>
+  <rect x="248" y="118" width="144" height="56" rx="10" fill="#ffffff" stroke="#E0E0E0"/>
+  <rect x="258" y="132" width="10" height="28" rx="5" fill="#FEB555"/>
+  <rect x="278" y="134" width="80" height="10" rx="5" fill="#101585"/>
+  <rect x="278" y="150" width="50" height="8" rx="4" fill="#CA90AF"/>
+  <rect x="248" y="186" width="144" height="56" rx="10" fill="#ffffff" stroke="#E0E0E0"/>
+  <rect x="258" y="200" width="10" height="28" rx="5" fill="#CA90AF"/>
+  <rect x="278" y="202" width="80" height="10" rx="5" fill="#101585"/>
+  <rect x="278" y="218" width="60" height="8" rx="4" fill="#CA90AF"/>
+  <rect x="248" y="254" width="144" height="56" rx="10" fill="#ffffff" stroke="#E0E0E0"/>
+  <rect x="258" y="268" width="10" height="28" rx="5" fill="#FEB555"/>
+  <rect x="278" y="270" width="70" height="10" rx="5" fill="#101585"/>
+  <rect x="278" y="286" width="44" height="8" rx="4" fill="#CA90AF"/>
+  <circle cx="320" cy="428" r="16" fill="#FEB555"/>
+</svg>

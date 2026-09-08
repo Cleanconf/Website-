@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="OSO Organised — one simple app to run your whole business">
+  <rect width="1200" height="630" fill="#101585"/>
+  <rect x="0" y="0" width="1200" height="12" fill="#CA90AF"/>
+  <rect x="90" y="150" width="90" height="90" rx="22" fill="#FEB555"/>
+  <circle cx="135" cy="195" r="24" fill="none" stroke="#101585" stroke-width="9"/>
+  <text x="210" y="215" font-family="Outfit, system-ui, sans-serif" font-size="60" font-weight="700" fill="#ffffff">OSO Organised</text>
+  <text x="92" y="360" font-family="Outfit, system-ui, sans-serif" font-size="72" font-weight="400" fill="#ffffff">One simple app to run</text>
+  <text x="92" y="450" font-family="Outfit, system-ui, sans-serif" font-size="72" font-weight="400" fill="#ffffff">your whole business.</text>
+  <text x="92" y="545" font-family="Outfit, system-ui, sans-serif" font-size="34" font-weight="400" fill="#CA90AF">Clients &#183; Bookings &#183; Payments &#183; Messages &#183; Dashboard</text>
+</svg>

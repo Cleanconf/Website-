@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="Illustration of a weekly booking calendar with jobs blocked out">
+  <rect width="640" height="480" fill="#F9F9F9"/>
+  <rect x="40" y="40" width="560" height="400" rx="16" fill="#ffffff" stroke="#E0E0E0"/>
+  <rect x="40" y="40" width="560" height="56" rx="16" fill="#101585"/>
+  <rect x="70" y="60" width="120" height="16" rx="8" fill="#ffffff"/>
+  <g fill="#CA90AF">
+    <rect x="70" y="118" width="60" height="10" rx="5"/>
+    <rect x="170" y="118" width="60" height="10" rx="5"/>
+    <rect x="270" y="118" width="60" height="10" rx="5"/>
+    <rect x="370" y="118" width="60" height="10" rx="5"/>
+    <rect x="470" y="118" width="60" height="10" rx="5"/>
+  </g>
+  <rect x="70" y="150" width="80" height="70" rx="8" fill="#FEB555"/>
+  <rect x="170" y="150" width="80" height="110" rx="8" fill="#a0a1ce"/>
+  <rect x="270" y="150" width="80" height="60" rx="8" fill="#FEB555"/>
+  <rect x="370" y="150" width="80" height="90" rx="8" fill="#a0a1ce"/>
+  <rect x="470" y="150" width="80" height="70" rx="8" fill="#FEB555"/>
+  <rect x="70" y="300" width="80" height="90" rx="8" fill="#a0a1ce"/>
+  <rect x="270" y="290" width="80" height="100" rx="8" fill="#a0a1ce"/>
+  <rect x="470" y="300" width="80" height="60" rx="8" fill="#FEB555"/>
+</svg>
