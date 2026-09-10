@@ -1,0 +1,6 @@
+# Local-only reference material — not part of the published site
+wireframes/
+SITE-REFERENCE.md
+
+# macOS
+.DS_Store

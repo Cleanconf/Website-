@@ -98,7 +98,7 @@ strong, b { font-weight: 700; }
 .site-header { background: var(--oso-dark-purple); color: var(--white); position: sticky; top: 0; z-index: 50; }
 .site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.75rem; }
 .brand { display: inline-flex; align-items: center; }
-.brand img { height: 30px; width: auto; }
+.brand img { height: 46px; width: auto; }
 .site-nav { display: flex; align-items: center; }
 .nav-menu { display: flex; align-items: center; gap: clamp(0.75rem, 0.3rem + 1.5vw, 1.75rem); margin: 0; }
 .nav-menu a { text-decoration: none; color: var(--white); font-size: 0.975rem; padding: 0.4rem 0; }
@@ -262,6 +262,7 @@ strong, b { font-weight: 700; }
 .site-footer a { color: var(--white); text-decoration: none; }
 .site-footer a:hover { color: var(--oso-orange); }
 .site-footer__inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: var(--gap); }
+.site-footer__inner img { height: 58px; width: auto; margin-bottom: 0.25rem; }
 .site-footer h2 { font: var(--preset-3); font-size: 1rem; margin-bottom: 0.75rem; color: var(--oso-pink); }
 .site-footer ul { display: grid; gap: 0.5rem; }
 .site-footer p { color: #e7e8ff; margin-top: 0.75rem; font-size: 0.95rem; }
