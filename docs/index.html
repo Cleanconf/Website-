@@ -126,11 +126,23 @@
         <h2 id="how-heading">How OSO works</h2>
         <p class="lead">Four small steps. No spreadsheets, no training day.</p>
       </div>
-      <div class="grid grid--3">
-        <div class="card card--step"><span class="step-num">1</span><h3>Add your clients</h3><p>Add each client once, with their name, address and contact details. Their bookings and payments build up on their profile as you go.</p></div>
-        <div class="card card--step"><span class="step-num">2</span><h3>Fill your calendar</h3><p>Book a job in seconds, and set regular cleans to repeat weekly, fortnightly or monthly. OSO warns you if two jobs overlap.</p></div>
-        <div class="card card--step"><span class="step-num">3</span><h3>Track who's paid</h3><p>Mark a job as done and it moves to your payments list. When a client is late, Lina gives you a polite message to send.</p></div>
-        <div class="card card--step"><span class="step-num">4</span><h3>See how you're doing</h3><p>See your income over time, your hours this month and your active clients, in plain numbers.</p></div>
+      <div class="carousel" role="region" aria-roledescription="carousel" aria-label="How OSO works, in four steps">
+        <div class="carousel__track">
+          <div class="card card--step"><span class="step-num">1</span><h3>Add your clients</h3><p>Add each client once, with their name, address and contact details. Their bookings and payments build up on their profile as you go.</p></div>
+          <div class="card card--step"><span class="step-num">2</span><h3>Fill your calendar</h3><p>Book a job in seconds, and set regular cleans to repeat weekly, fortnightly or monthly. OSO warns you if two jobs overlap.</p></div>
+          <div class="card card--step"><span class="step-num">3</span><h3>Track who's paid</h3><p>Mark a job as done and it moves to your payments list. When a client is late, Lina gives you a polite message to send.</p></div>
+          <div class="card card--step"><span class="step-num">4</span><h3>See how you're doing</h3><p>See your income over time, your hours this month and your active clients, in plain numbers.</p></div>
+        </div>
+        <div class="carousel__nav">
+          <button type="button" class="carousel__btn carousel__btn--prev" aria-label="Previous step">&lsaquo;</button>
+          <div class="carousel__dots">
+            <button type="button" class="carousel__dot" aria-label="Go to step 1"></button>
+            <button type="button" class="carousel__dot" aria-label="Go to step 2"></button>
+            <button type="button" class="carousel__dot" aria-label="Go to step 3"></button>
+            <button type="button" class="carousel__dot" aria-label="Go to step 4"></button>
+          </div>
+          <button type="button" class="carousel__btn carousel__btn--next" aria-label="Next step">&rsaquo;</button>
+        </div>
       </div>
     </div>
   </section>
