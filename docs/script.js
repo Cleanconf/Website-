@@ -28,11 +28,17 @@
   });
 })();
 
-/* Carousel: works for any .carousel on the page — arrows scroll one slide,
-   dots jump to a slide, both stay in sync with manual swipe/scroll. */
+/* Carousel: works for any .carousel on the page. Dots jump to a slide;
+   arrows (if present) scroll one slide; the track auto-advances on a timer
+   and loops back to the start. Autoplay pauses on hover/focus/touch and
+   while scrolled out of view, and never runs at all for anyone with
+   "reduce motion" set. */
 (function () {
   var carousels = document.querySelectorAll(".carousel");
   if (!carousels.length) return;
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var AUTOPLAY_MS = 4000;
 
   carousels.forEach(function (carousel) {
     var track = carousel.querySelector(".carousel__track");
@@ -53,7 +59,7 @@
     }
 
     function goTo(i) {
-      i = Math.max(0, Math.min(slides.length - 1, i));
+      i = (i + slides.length) % slides.length; // loop round both ways
       track.scrollTo({ left: slides[i].offsetLeft, behavior: "smooth" });
     }
 
@@ -62,8 +68,8 @@
       dots.forEach(function (dot, di) {
         dot.setAttribute("aria-current", di === i ? "true" : "false");
       });
-      if (prevBtn) prevBtn.disabled = i === 0;
-      if (nextBtn) nextBtn.disabled = i === slides.length - 1;
+      if (prevBtn) prevBtn.disabled = false;
+      if (nextBtn) nextBtn.disabled = false;
     }
 
     if (prevBtn) prevBtn.addEventListener("click", function () { goTo(currentIndex() - 1); });
@@ -80,5 +86,34 @@
     window.addEventListener("resize", refresh);
 
     refresh();
+    if (reduceMotion) return; // static but still swipeable/clickable
+
+    var timer = null;
+    var inView = false;
+
+    function play() {
+      stop();
+      timer = setInterval(function () { goTo(currentIndex() + 1); }, AUTOPLAY_MS);
+    }
+    function stop() {
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    carousel.addEventListener("mouseenter", stop);
+    carousel.addEventListener("mouseleave", function () { if (inView) play(); });
+    carousel.addEventListener("focusin", stop);
+    carousel.addEventListener("focusout", function () { if (inView) play(); });
+    carousel.addEventListener("touchstart", stop, { passive: true });
+
+    if ("IntersectionObserver" in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (inView) play(); else stop();
+      }, { threshold: 0.4 });
+      observer.observe(carousel);
+    } else {
+      inView = true;
+      play();
+    }
   });
 })();

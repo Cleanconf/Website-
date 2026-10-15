@@ -139,6 +139,14 @@ strong, b { font-weight: 700; }
 .hero .btn-row { margin-top: 1.75rem; }
 .hero__note { margin-top: 1rem; font-size: 0.9rem; color: var(--oso-pink); }
 .hero__media img { border-radius: var(--radius); background: var(--oso-light-purple); border: 3px solid var(--oso-pink); }
+/* Real app screenshots are tall (portrait) photos inside these landscape
+   frames. Fit the whole screen without cropping or stretching it; object-fit
+   letterboxes it, centred, inside a fixed-height band so the frame keeps its
+   original footprint and nothing on the page jumps while images load. */
+.hero__media picture,
+.split__media picture { display: contents; }
+.hero__media img,
+.split__media img { width: 100%; height: clamp(260px, 38vw, 420px); object-fit: contain; }
 @media (max-width: 820px) { .hero__inner { grid-template-columns: 1fr; } .hero__media { order: -1; } }
 
 /* ---------- Stat bar ---------- */
