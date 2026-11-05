@@ -96,4 +96,10 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+  <url>
+    <loc>https://osoorganised.co.uk/content-hub/notebook-spreadsheet-or-app-the-best-way-to-run-your-cleaning-business/</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>
