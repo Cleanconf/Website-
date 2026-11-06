@@ -1,0 +1,8 @@
+# Every file in this repository requires approval from Lucy (@Cleanconf)
+# before it can be merged, unless a more specific rule below says otherwise.
+* @Cleanconf
+
+# Exception: the app-connect folder is the one area Alex can change
+# on his own. No owner is listed here, so no approval is required
+# for changes limited to this folder.
+/docs/app-connect/
