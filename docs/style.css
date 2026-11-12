@@ -275,6 +275,12 @@ a.card__link:hover { border-color: var(--oso-dark-purple); }
 .article ul, .article ol { padding-left: 1.25rem; }
 .article li { margin-top: 0.4rem; }
 .article__meta { color: #4b4d8a; font-size: 0.9rem; margin-top: 0.75rem; }
+.article [id] { scroll-margin-top: 5.5rem; }
+.article .table-scroll { margin-top: 1rem; overflow-x: auto; }
+.article table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: 0.95rem; line-height: 1.5; }
+.article th, .article td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--oso-grey); text-align: left; vertical-align: top; }
+.article th { background: var(--oso-light-grey); font-weight: 600; }
+.article code { font-size: 0.9em; white-space: nowrap; }
 .article blockquote {
   margin: 1.5rem 0; padding: 1rem 1.25rem; background: var(--oso-light-grey);
   border-left: 4px solid var(--oso-orange); border-radius: 8px;

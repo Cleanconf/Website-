@@ -37,6 +37,28 @@ also add it to `docs/sitemap.xml`.
 Placeholder content (testimonials, pricing, stats, contact email) is marked in the page
 with a "Placeholder" tag or a note — swap for real content when it's available.
 
+## Legal documents
+
+The Privacy Policy, Terms of Service and DPA (`docs/privacy/`, `docs/terms/`, `docs/dpa/`) are the
+single source of truth: the OSO app links to these pages rather than keeping its own copy. The
+cookie section of the Privacy Policy has a stable `#cookies` anchor that the app's consent banner
+links to, so don't rename it.
+
+Each document shows its version date (`Version dd/mm/yyyy`), which changes only for material
+changes:
+
+- **Minor change** (typo, formatting, clearer wording that doesn't change meaning): edit the page
+  and leave the version alone. No notice is needed.
+- **Material change** (anything that changes users' rights or what we do with their data): update
+  the version date on the page **and** the matching entry in `docs/legal/versions.json` (ISO
+  format, `yyyy-mm-dd`). Then email active subscribers before the change takes effect, and keep a
+  copy of the email and the date it was sent. The app README has the full steps.
+
+The app checks `versions.json` in CI and fails until its own copy of the versions is updated, so a
+change can't go unnoticed. The app records which Terms and Privacy Policy versions each user
+accepted when they subscribed. When the Privacy Policy version changes, the app also asks users
+for analytics consent again.
+
 ## Preview locally
 
 ```bash
