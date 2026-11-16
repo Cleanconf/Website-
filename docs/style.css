@@ -232,6 +232,23 @@ a.card__link:hover { border-color: var(--oso-dark-purple); }
   .split:nth-of-type(even) .split__media { order: 0; }
 }
 
+/* ---------- Beta landing page: centred intro (no image beside it) ---------- */
+.hero--center .hero__inner { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+.hero--center h1 { max-width: 20ch; }
+.hero--center p { margin-inline: auto; }
+.hero--center .btn-row { justify-content: center; }
+
+/* ---------- Beta landing page: vertical video embed ---------- */
+.video-frame {
+  max-width: 320px;
+  margin-inline: auto;
+  border-radius: var(--radius);
+  background: var(--oso-light-purple);
+  border: 3px solid var(--oso-pink);
+  overflow: hidden;
+}
+.video-frame video { width: 100%; height: auto; display: block; }
+
 /* ---------- Testimonials ---------- */
 .quote {
   background: var(--white);
