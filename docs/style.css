@@ -347,6 +347,39 @@ a.card__link:hover { border-color: var(--oso-dark-purple); }
 .cta-bar .btn { padding: 0.55rem 1.1rem; }
 @media (max-width: 480px) { .cta-bar p { font-size: 0.9rem; } .cta-bar .btn { font-size: 0.9rem; padding: 0.5rem 0.9rem; } }
 
+/* ---------- Cookie consent banner ---------- */
+/* A floating card, not a second full-width bar, so it never collides with
+   the fixed bottom CTA bar or its body padding. */
+.cookie-banner {
+  position: fixed;
+  z-index: 65;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(var(--bottom-bar-h) + 1rem);
+  max-width: 420px;
+  margin-left: auto;
+  background: var(--white);
+  color: var(--text);
+  border: 1px solid var(--oso-grey);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(16, 21, 133, 0.18);
+  padding: 1.25rem;
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner p { font-size: 0.95rem; line-height: 1.5; }
+.cookie-banner a { color: var(--oso-dark-purple); font-weight: 700; }
+.cookie-banner__actions { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+.cookie-banner__actions .btn { flex: 1 1 auto; text-align: center; padding: 0.7rem 1rem; }
+@media (max-width: 480px) { .cookie-banner { left: 0.75rem; right: 0.75rem; bottom: calc(var(--bottom-bar-h) + 0.75rem); max-width: none; } }
+
+/* Footer "Cookie settings" trigger: a button styled to match the other
+   footer links, since it performs an action rather than navigating. */
+.cookie-settings-btn {
+  display: inline-block; background: none; border: none; padding: 0; margin-top: 0.75rem;
+  font: inherit; color: var(--white); text-decoration: underline; cursor: pointer;
+}
+.cookie-settings-btn:hover { color: var(--oso-orange); }
+
 /* ---------- Skip link ---------- */
 .skip-link {
   position: absolute; left: 0.5rem; top: -3rem; background: var(--oso-orange); color: var(--oso-dark-purple);

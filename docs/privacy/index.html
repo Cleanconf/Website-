@@ -70,7 +70,7 @@
     <div class="container">
       <div class="article">
         <h1>Privacy Policy</h1>
-        <p class="article__meta">Version 10/11/2026</p>
+        <p class="article__meta">Version 20/11/2026</p>
 
         <h2 id="s1">1. Introduction</h2>
         <h3>1.1 Purpose.</h3>
@@ -197,6 +197,7 @@
               <tr><td>Firebase sign-in storage</td><td>Google (Firebase)</td><td>Keeps you signed in</td><td>Until you sign out</td></tr>
               <tr><td><code>oso_email_for_sign_in</code></td><td>OSO</td><td>Remembers the email address a sign-in link was sent to</td><td>Until you use the link</td></tr>
               <tr><td><code>oso_analytics_consent</code></td><td>OSO</td><td>Remembers your analytics choice</td><td>Until you clear your browser data</td></tr>
+              <tr><td><code>oso_site_analytics_consent</code></td><td>OSO</td><td>Remembers your analytics choice on our website</td><td>Until you clear your browser data</td></tr>
               <tr><td><code>oso.accountDeleted</code></td><td>OSO</td><td>Confirms your account has been deleted</td><td>Until you close the tab</td></tr>
               <tr><td><code>__stripe_mid</code>, <code>__stripe_sid</code></td><td>Stripe</td><td>Payment security and fraud prevention</td><td>1 year / 30 minutes</td></tr>
             </tbody>
@@ -215,8 +216,21 @@
           </table>
         </div>
         <p>Before you make your choice, we may hold a small number of usage events on your device (for example, that you signed in). If you accept, they are sent to PostHog. If you decline, they are deleted.</p>
+        <h3>12.3a Analytics on our website (only with your consent).</h3>
+        <p>If you accept analytics cookies on our website, we use Google Analytics to understand how visitors use the site. Google Analytics does not identify you by name.</p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th scope="col">Name</th><th scope="col">Provider</th><th scope="col">Purpose</th><th scope="col">Duration</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>_ga</code></td><td>Google Analytics</td><td>Distinguishes unique visitors</td><td>2 years</td></tr>
+              <tr><td><code>_ga_0G1BK3V47K</code></td><td>Google Analytics</td><td>Remembers your session</td><td>2 years</td></tr>
+            </tbody>
+          </table>
+        </div>
         <h3>12.4 Your choices.</h3>
-        <p>When you first use the Platform, we ask whether you accept analytics. You can change your choice at any time under <strong>Profile → Enable analytics / Withdraw consent</strong>. If you withdraw, we stop collecting analytics data straight away.</p>
+        <p>When you first use the Platform, we ask whether you accept analytics. You can change your choice at any time under <strong>Profile → Enable analytics / Withdraw consent</strong>. If you withdraw, we stop collecting analytics data straight away. On our website, you can change your choice at any time using the <strong>Cookie settings</strong> link in the footer. The website and the app each remember your choice separately.</p>
         <h3>12.5 Other services.</h3>
         <p>Our website and Platform load fonts from Google Fonts, which means your IP address is shared with Google. Google Fonts does not set cookies.</p>
         </div>
@@ -290,6 +304,7 @@
       </div>
     </div>
     <p class="copyright">&copy; 2026 OSO Organised. All rights reserved.</p>
+      <button type="button" class="cookie-settings-btn" data-cookie-settings>Cookie settings</button>
   </div>
 </footer>
 
@@ -299,5 +314,6 @@
 </div>
 
 <script src="/script.js" defer></script>
+<script src="/cookie-consent.js" defer></script>
 </body>
 </html>
