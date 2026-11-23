@@ -11,7 +11,7 @@ import os
 
 import requests
 
-SOURCE_LABEL = {"stripe": "Stripe", "posthog": "PostHog", "ga4": "Google Analytics"}
+SOURCE_LABEL = {"stripe": "Stripe", "posthog": "PostHog"}
 
 
 def _arrow_for(comparison: dict) -> str:
