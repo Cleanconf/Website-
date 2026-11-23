@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Orchestrates one run of the dashboard job: fetches Stripe/PostHog for a
-London date, stores the snapshot and rollups, flags anomalies, asks Claude
-for 3 actions (skipped gracefully with no key or nothing flagged), and
-posts the Slack summary.
+Orchestrates one run of the dashboard job: fetches Stripe/PostHog/Meta for
+a London date, stores the snapshot and rollups, flags anomalies, asks
+Claude for 3 actions per view (skipped gracefully with no key or nothing
+flagged), and posts the Slack summary across both views.
 
 Usage:
     python3 run_job.py                        # yesterday (London), normal run
@@ -26,6 +26,7 @@ from insights import generate_insight
 from rollups import METRIC_KINDS_BY_SOURCE, build_rollup, rollup_input_date_range
 from rules import flag_all_metrics, seven_day_average, status_word
 from slack_post import build_failure_notice, build_slack_message, post_to_slack
+from sources.meta_source import fetch_meta_daily_raw
 from sources.posthog_source import fetch_posthog_daily_raw
 from sources.stripe_source import fetch_stripe_daily_raw
 from storage import (
@@ -41,8 +42,7 @@ from storage import (
     write_snapshot_and_update_series,
 )
 
-DASHBOARD_SOURCES = ["stripe", "posthog"]
-FETCHERS = {"stripe": fetch_stripe_daily_raw, "posthog": fetch_posthog_daily_raw}
+FETCHERS = {"stripe": fetch_stripe_daily_raw, "posthog": fetch_posthog_daily_raw, "meta": fetch_meta_daily_raw}
 SOURCE_RETRIES = 2  # up to 2 retries (3 attempts total) with backoff.
 SOURCE_TIMEOUT_SECONDS = 30
 
@@ -55,6 +55,23 @@ BUSINESS_OVERVIEW_HEADLINES = [
     {"key": "new_paid_sign_ups", "label": "New paid sign-ups", "source": "stripe", "formatter": format_count},
     {"key": "new_trial_sign_ups", "label": "New trial sign-ups", "source": "posthog", "formatter": format_count},
 ]
+
+# Facebook/Instagram followers only for now - reach and Facebook's own
+# best-post/engagement need permissions this token doesn't have yet (see
+# sources/meta_source.py). "Followers gained" isn't a separate headline:
+# it's the same comparison engine's day-over-day change on these.
+SOCIAL_MEDIA_HEADLINES = [
+    {"key": "page_followers", "label": "Facebook followers", "source": "meta", "formatter": format_count},
+    {"key": "ig_followers", "label": "Instagram followers", "source": "meta", "formatter": format_count},
+]
+
+# Each view's own sources (for Claude insights, which is one call per view)
+# and which of DASHBOARD_SOURCES that spans.
+VIEWS = [
+    {"id": "business_overview", "label": "Business overview", "sources": ["stripe", "posthog"], "headlines": BUSINESS_OVERVIEW_HEADLINES},
+    {"id": "social_media", "label": "Social media", "sources": ["meta"], "headlines": SOCIAL_MEDIA_HEADLINES},
+]
+DASHBOARD_SOURCES = sorted({source for view in VIEWS for source in view["sources"]})
 
 
 def _with_retries(fn, retries: int, base_delay_seconds: float = 1.0):
@@ -111,6 +128,27 @@ def build_headline_metric(spec: dict, date_str: str, source_status: str, raw_by_
     }
 
 
+def build_social_media_notes(date_str: str, source_status: str, raw_by_date: dict) -> list[str]:
+    """Free-text lines for the social media view - the best Instagram post of the day, and a plain statement of what is not available yet rather than leaving it silently missing."""
+    if source_status != "ok":
+        return []
+    raw = raw_by_date["meta"].get(date_str) or {}
+    notes = []
+    if raw.get("ig_best_post"):
+        post = raw["ig_best_post"]
+        rate = raw.get("ig_engagement_rate")
+        rate_text = f"{rate * 100:.1f}% engagement" if rate is not None else "engagement rate not available"
+        likes_text = "1 like" if post["likes"] == 1 else f"{post['likes']} likes"
+        comments_text = "1 comment" if post["comments"] == 1 else f"{post['comments']} comments"
+        notes.append(f"Best Instagram post: {likes_text}, {comments_text} ({rate_text}) — {post['permalink']}")
+    else:
+        notes.append("No Instagram post yesterday.")
+    reasons = raw.get("not_available_reasons", {})
+    if reasons:
+        notes.append("Not available yet: Facebook best post, Facebook reach, Instagram reach — " + "; ".join(sorted(set(reasons.values()))))
+    return notes
+
+
 def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run: bool = False) -> dict:
     date_str = date_str or yesterday_london()
     ensure_targets_config_exists()
@@ -132,24 +170,33 @@ def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run:
 
     targets_config = get_targets_config()
 
-    flagged_deltas = []
-    for source in DASHBOARD_SOURCES:
-        flagged_deltas.extend(flag_all_metrics(source, date_str, raw_by_date[source], METRIC_KINDS_BY_SOURCE[source], targets_config))
+    view_sections = []
+    claude_calls_used = 0
+    for view in VIEWS:
+        flagged_deltas = []
+        for source in view["sources"]:
+            flagged_deltas.extend(flag_all_metrics(source, date_str, raw_by_date[source], METRIC_KINDS_BY_SOURCE[source], targets_config))
 
-    insight = generate_insight("business_overview", date_str, flagged_deltas)
-    write_insight(insight)
+        insight = generate_insight(view["id"], date_str, flagged_deltas)
+        write_insight(insight)
+        if insight["status"] == "generated":
+            claude_calls_used += 1
 
-    headline_metrics = [build_headline_metric(spec, date_str, source_statuses[spec["source"]], raw_by_date, rollups, targets_config) for spec in BUSINESS_OVERVIEW_HEADLINES]
+        headline_metrics = [
+            build_headline_metric(spec, date_str, source_statuses[spec["source"]], raw_by_date, rollups, targets_config) for spec in view["headlines"]
+        ]
+        notes = build_social_media_notes(date_str, source_statuses.get("meta"), raw_by_date) if view["id"] == "social_media" else []
 
-    business_overview = {"view": "business_overview", "view_label": "Business overview", "headline_metrics": headline_metrics, "actions": insight["actions"]}
+        view_sections.append({"view": view["id"], "view_label": view["label"], "headline_metrics": headline_metrics, "actions": insight["actions"], "notes": notes})
+
     stale_sources = [s for s in DASHBOARD_SOURCES if source_statuses[s] == "stale"]
 
     message = build_slack_message(
         date_str=date_str,
-        views=[business_overview],
+        views=view_sections,
         stale_sources=stale_sources,
         dashboard_url="https://app.osoorganised.co.uk/admin/dashboard",
-        claude_calls_used=1 if insight["status"] == "generated" else 0,
+        claude_calls_used=claude_calls_used,
         claude_daily_cap=10,
     )
 
@@ -171,7 +218,7 @@ def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run:
             "force": force,
             "source_statuses": source_statuses,
             "slack_posted": posted,
-            "claude_calls_used": 1 if insight["status"] == "generated" else 0,
+            "claude_calls_used": claude_calls_used,
         },
     )
 

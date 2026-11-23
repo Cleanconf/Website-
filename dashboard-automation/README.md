@@ -6,10 +6,11 @@ Every morning at 06:00 UK time, a small program wakes up and:
 
 1. Asks Stripe for yesterday's money numbers (revenue, new paying customers, cancellations and why, failed payments).
 2. Asks PostHog (the app's analytics) for yesterday's trial sign-ups and website click-throughs.
-3. Saves all of that, and works out how it compares to the day before, the same day last week, and the same point last month.
-4. Checks whether anything moved more than 15% away from its normal level over the last week.
-5. If anything did, and a Claude (Anthropic) key has been set up, asks Claude to turn that into 3 plain-English suggestions. If not, it just says "no suggestions yet" rather than guessing.
-6. Posts a short message to Slack with the headline numbers and those suggestions.
+3. Asks Facebook and Instagram for today's follower counts and yesterday's best Instagram post.
+4. Saves all of that, and works out how it compares to the day before, the same day last week, and the same point last month.
+5. Checks whether anything moved more than 15% away from its normal level over the last week.
+6. If anything did, and a Claude (Anthropic) key has been set up, asks Claude to turn that into 3 plain-English suggestions per view. If not, it just says "no suggestions yet" rather than guessing.
+7. Posts a short message to Slack, one section per view (Business overview, Social media), with the headline numbers and those suggestions.
 
 There's no website-traffic source at the moment: Google Analytics was deliberately taken out (website tracking is moving to PostHog instead), and PostHog doesn't track the website yet, only the app - see "Not built yet" below.
 
@@ -36,6 +37,7 @@ These are set once in this GitHub repository's **Settings -> Secrets and variabl
 | `STRIPE_DASHBOARD_KEY` | A **restricted, read-only** Stripe key | Stripe Dashboard -> Developers -> API keys -> "Create restricted key", read-only on Customers, Subscriptions, Charges, Invoices, Payment Intents, Disputes |
 | `POSTHOG_API_KEY` | A PostHog personal API key, ideally scoped read-only | PostHog -> Settings -> Personal API keys |
 | `POSTHOG_PROJECT_ID` | The PostHog project ID holding real app traffic | The number in the PostHog project URL (currently `265973`) |
+| `META_PAGE_ID`, `META_PAGE_ACCESS_TOKEN`, `META_IG_USER_ID`, `META_IG_ACCESS_TOKEN` | The existing "Publisher" Meta system user token (reused from the content automation) | Already in `automation/.env` locally - copy the same four values in as GitHub secrets |
 | `SLACK_BOT_TOKEN` | The existing "OSO Content Review" Slack bot token (reused from the content automation) | Already in `automation/.env` locally - copy the same value in as a GitHub secret. Invite the bot to the dashboard Slack channel: `/invite @OSO Content Review` |
 | `SLACK_CHANNEL_ID` | The Slack channel ID for `#daily-dashboard-metrics` | Right-click the channel in Slack -> View channel details -> copy the Channel ID at the bottom |
 | `ANTHROPIC_API_KEY` | Optional. Without it, the job runs fine and just skips the "3 suggestions" step | console.anthropic.com -> Settings -> API Keys |
@@ -57,6 +59,14 @@ Tick "dry_run" when running the workflow manually. It builds everything and logs
 ## Not built yet
 
 **Website traffic.** Google Analytics was removed as a source (website tracking is moving to PostHog instead), but PostHog isn't tracking the website yet - only the app. Once PostHog is added to the website, a `posthog_source.py`-style query against website events can feed visitor/traffic metrics back into this job the same way the app's PostHog events already do.
+
+**Facebook reach, Facebook best post, and Instagram reach.** Followers work for both platforms, but these three do not, with the existing Meta token:
+
+- Facebook Page posts (needed for "best post" and engagement rate): the API said this needs the `pages_read_engagement` permission or "Page Public Content Access" feature - worth checking in Meta Business Settings whether the Publisher system user actually has this working, since it is listed as granted but the API call still refused it.
+- Instagram reach: needs the `instagram_manage_insights` permission added to the token - it is not currently granted.
+- Facebook Page reach/impressions: every Page Insights metric name tried came back "not a valid insights metric", which is not a permissions error - needs more investigation into how the Page Insights API itself is meant to be called before this is trustworthy.
+
+Until any of these are sorted out, the Slack message says plainly that they are not available, rather than showing a zero.
 
 ## Tests
 
