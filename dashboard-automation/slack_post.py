@@ -11,7 +11,7 @@ import os
 
 import requests
 
-SOURCE_LABEL = {"stripe": "Stripe", "posthog": "PostHog"}
+SOURCE_LABEL = {"stripe": "Stripe", "posthog": "PostHog", "meta": "Facebook/Instagram"}
 
 
 def _arrow_for(comparison: dict) -> str:
@@ -45,6 +45,8 @@ def _view_section(section: dict) -> list[dict]:
     if section["actions"]:
         actions_text = "\n".join(f"{i + 1}. *{a['title']}* — {a['detail']}" for i, a in enumerate(section["actions"]))
         blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": actions_text}})
+    if section.get("notes"):
+        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "\n".join(section["notes"])}})
     return blocks
 
 

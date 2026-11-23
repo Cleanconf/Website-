@@ -42,9 +42,19 @@ POSTHOG_METRIC_KINDS = {
     "active_users": "last",
 }
 
+# ig_best_post / ig_engagement_rate / page_reach / ig_reach etc. aren't
+# listed here - they're not numeric trend metrics (a post, or a ratio with
+# no meaningful sum), so they're carried in the raw snapshot for detail
+# views only, same as churn_reasons/top_pages elsewhere.
+META_METRIC_KINDS = {
+    "page_followers": "last",
+    "ig_followers": "last",
+}
+
 METRIC_KINDS_BY_SOURCE = {
     "stripe": STRIPE_METRIC_KINDS,
     "posthog": POSTHOG_METRIC_KINDS,
+    "meta": META_METRIC_KINDS,
 }
 
 

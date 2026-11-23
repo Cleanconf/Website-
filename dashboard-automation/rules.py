@@ -12,6 +12,8 @@ DEFAULT_TARGETS_CONFIG = {
         "churned_subscriptions": {"target": None, "direction": "lower_is_better"},
         "failed_payments": {"target": None, "direction": "lower_is_better"},
         "new_trial_sign_ups": {"target": None, "direction": "higher_is_better"},
+        "page_followers": {"target": None, "direction": "higher_is_better"},
+        "ig_followers": {"target": None, "direction": "higher_is_better"},
     },
 }
 
