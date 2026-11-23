@@ -1,0 +1,102 @@
+name: Daily dashboard
+
+# GitHub Actions cron is always UTC, with no timezone option, so this
+# triggers twice (05:00 and 06:00 UTC) to cover both BST and GMT, and the
+# "Check it is 06:00 in London" step below skips the wrong one of the two
+# on any given day - the actual 06:00 Europe/London run always proceeds,
+# the other is a cheap no-op.
+on:
+  schedule:
+    - cron: "0 5 * * *"
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "A single London date (YYYY-MM-DD) to run for. Leave blank for yesterday."
+        required: false
+      from_date:
+        description: "Start of a backfill range (YYYY-MM-DD, inclusive). Leave blank unless backfilling."
+        required: false
+      to_date:
+        description: "End of a backfill range (YYYY-MM-DD, inclusive)."
+        required: false
+      force:
+        description: "Re-fetch and overwrite even if already done for that date."
+        type: boolean
+        default: false
+      dry_run:
+        description: "Build everything and log the Slack message without sending it."
+        type: boolean
+        default: false
+
+concurrency:
+  group: daily-dashboard
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check it is 06:00 in London (scheduled runs only)
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            HOUR=$(TZ="Europe/London" date +%H)
+            echo "London hour is $HOUR"
+            if [ "$HOUR" = "06" ]; then
+              echo "run=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "run=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Checkout code
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: dashboard-automation/requirements.txt
+
+      - name: Install dependencies
+        if: steps.gate.outputs.run == 'true'
+        working-directory: dashboard-automation
+        run: pip install -r requirements.txt
+
+      - name: Run the dashboard job
+        if: steps.gate.outputs.run == 'true'
+        working-directory: dashboard-automation
+        env:
+          STRIPE_DASHBOARD_KEY: ${{ secrets.STRIPE_DASHBOARD_KEY }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+          GA4_PROPERTY_ID: ${{ secrets.GA4_PROPERTY_ID }}
+          GA4_SERVICE_ACCOUNT_JSON: ${{ secrets.GA4_SERVICE_ACCOUNT_JSON }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          ARGS=()
+          if [ -n "${{ inputs.date }}" ]; then ARGS+=(--date "${{ inputs.date }}"); fi
+          if [ -n "${{ inputs.from_date }}" ]; then ARGS+=(--from "${{ inputs.from_date }}"); fi
+          if [ -n "${{ inputs.to_date }}" ]; then ARGS+=(--to "${{ inputs.to_date }}"); fi
+          if [ "${{ inputs.force }}" = "true" ]; then ARGS+=(--force); fi
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS+=(--dry-run); fi
+          python3 run_job.py "${ARGS[@]}"
+
+      - name: Commit the day's data
+        if: steps.gate.outputs.run == 'true' && inputs.dry_run != true
+        run: |
+          git config user.name "OSO Dashboard Bot"
+          git config user.email "dashboard-bot@osoorganised.co.uk"
+          git add dashboard-automation/data
+          git diff --cached --quiet || git commit -m "Dashboard snapshot for $(TZ='Europe/London' date +%Y-%m-%d -d yesterday)"
+          git push
