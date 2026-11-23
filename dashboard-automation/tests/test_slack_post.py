@@ -78,10 +78,10 @@ def test_lists_prioritised_actions_under_their_view():
 
 
 def test_calls_out_stale_sources():
-    message = build_slack_message(**_base_input(stale_sources=["ga4"]))
+    message = build_slack_message(**_base_input(stale_sources=["posthog"]))
     blob = json.dumps(message["blocks"])
     assert "Stale" in blob
-    assert "Google Analytics" in blob
+    assert "PostHog" in blob
 
 
 def test_omits_stale_warning_when_nothing_is_stale():

@@ -2,7 +2,7 @@
 Europe/London calendar-day helpers for the dashboard job.
 
 Comparisons in the brief are all in Europe/London "calendar days", but
-calling Stripe/PostHog/GA4 needs real UTC instants for date-range filters.
+calling Stripe/PostHog needs real UTC instants for date-range filters.
 The tricky part is the two days a year where London's UTC offset changes
 mid-day (BST <-> GMT).
 

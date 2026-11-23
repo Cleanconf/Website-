@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Orchestrates one run of the dashboard job: fetches Stripe/PostHog/GA4 for a
+Orchestrates one run of the dashboard job: fetches Stripe/PostHog for a
 London date, stores the snapshot and rollups, flags anomalies, asks Claude
 for 3 actions (skipped gracefully with no key or nothing flagged), and
 posts the Slack summary.
@@ -26,7 +26,6 @@ from insights import generate_insight
 from rollups import METRIC_KINDS_BY_SOURCE, build_rollup, rollup_input_date_range
 from rules import flag_all_metrics, seven_day_average, status_word
 from slack_post import build_failure_notice, build_slack_message, post_to_slack
-from sources.ga4_source import fetch_ga4_daily_raw
 from sources.posthog_source import fetch_posthog_daily_raw
 from sources.stripe_source import fetch_stripe_daily_raw
 from storage import (
@@ -42,19 +41,19 @@ from storage import (
     write_snapshot_and_update_series,
 )
 
-DASHBOARD_SOURCES = ["stripe", "posthog", "ga4"]
-FETCHERS = {"stripe": fetch_stripe_daily_raw, "posthog": fetch_posthog_daily_raw, "ga4": fetch_ga4_daily_raw}
+DASHBOARD_SOURCES = ["stripe", "posthog"]
+FETCHERS = {"stripe": fetch_stripe_daily_raw, "posthog": fetch_posthog_daily_raw}
 SOURCE_RETRIES = 2  # up to 2 retries (3 attempts total) with backoff.
 SOURCE_TIMEOUT_SECONDS = 30
 
-# A reasonable first cut at Business overview's 3-4 headline numbers,
-# spanning all three sources. Will likely change once the full dashboard
-# design (not just the design principles) is available.
+# A reasonable first cut at Business overview's headline numbers, spanning
+# both sources. Will likely change once the full dashboard design (not just
+# the design principles) is available. No website-traffic headline for now -
+# GA4 was removed, and PostHog isn't tracking the website yet (see README).
 BUSINESS_OVERVIEW_HEADLINES = [
     {"key": "revenue_pence", "label": "Revenue", "source": "stripe", "formatter": format_pence},
     {"key": "new_paid_sign_ups", "label": "New paid sign-ups", "source": "stripe", "formatter": format_count},
     {"key": "new_trial_sign_ups", "label": "New trial sign-ups", "source": "posthog", "formatter": format_count},
-    {"key": "visitors", "label": "Website visitors", "source": "ga4", "formatter": format_count},
 ]
 
 

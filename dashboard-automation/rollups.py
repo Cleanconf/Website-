@@ -42,16 +42,9 @@ POSTHOG_METRIC_KINDS = {
     "active_users": "last",
 }
 
-GA4_METRIC_KINDS = {
-    "visitors": "sum",
-    "new_visitors": "sum",
-    "total_dwell_seconds": "sum",
-}
-
 METRIC_KINDS_BY_SOURCE = {
     "stripe": STRIPE_METRIC_KINDS,
     "posthog": POSTHOG_METRIC_KINDS,
-    "ga4": GA4_METRIC_KINDS,
 }
 
 
