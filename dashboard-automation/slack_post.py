@@ -1,8 +1,8 @@
 """
-Every status, arrow and target line carries a glyph AND a word (never
-colour alone - one of the design principles the brief carries over from
-the dashboard UI). "flat" marks "no prior data to compare against" rather
-than implying a real zero change.
+The actual figures live only on the dashboard HTML page (see README) and
+in dashboard-automation/data/ - never duplicated into the Slack message
+itself. Slack is just the daily nudge: a link, a stale-source warning if
+one is needed, and the run usage line.
 """
 
 from __future__ import annotations
@@ -14,56 +14,22 @@ import requests
 SOURCE_LABEL = {"stripe": "Stripe", "posthog": "PostHog", "meta": "Facebook/Instagram"}
 
 
-def _arrow_for(comparison: dict) -> str:
-    change = comparison["change"]
-    if change is None:
-        return "▬"  # flat glyph
-    if change > 0:
-        return "▲"  # up glyph
-    if change < 0:
-        return "▼"  # down glyph
-    return "▬"
-
-
-def _change_label(comparison: dict) -> str:
-    change_percent = comparison["change_percent"]
-    if change_percent is None:
-        return "not available yet" if comparison["change"] is None else "vs n/a"
-    sign = "+" if change_percent > 0 else ""
-    return f"{sign}{change_percent:.1f}%"
-
-
-def _headline_line(metric: dict) -> str:
-    return f"*{metric['label']}*: {metric['formatted_value']} {_arrow_for(metric['comparison'])} {_change_label(metric['comparison'])} ({metric['status']})"
-
-
-def _view_section(section: dict) -> list[dict]:
-    blocks = [
-        {"type": "section", "text": {"type": "mrkdwn", "text": f"*{section['view_label']}*"}},
-        {"type": "section", "text": {"type": "mrkdwn", "text": "\n".join(_headline_line(m) for m in section["headline_metrics"])}},
-    ]
-    if section["actions"]:
-        actions_text = "\n".join(f"{i + 1}. *{a['title']}* — {a['detail']}" for i, a in enumerate(section["actions"]))
-        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": actions_text}})
-    if section.get("notes"):
-        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "\n".join(section["notes"])}})
-    return blocks
-
-
 def build_slack_message(
     date_str: str,
-    views: list[dict],
     stale_sources: list[str],
-    dashboard_url: str,
     claude_calls_used: int,
     claude_daily_cap: int,
+    dashboard_url: str | None = None,
 ) -> dict:
     blocks: list[dict] = [{"type": "header", "text": {"type": "plain_text", "text": f"OSO dashboard — {date_str}"}}]
 
-    for index, section in enumerate(views):
-        if index > 0:
-            blocks.append({"type": "divider"})
-        blocks.extend(_view_section(section))
+    # The dashboard is a plain local file (dashboard.html), not hosted
+    # anywhere - never part of the web app, see README - so there is no
+    # real URL to link to unless dashboard_url is explicitly set (e.g. if
+    # it is ever given a private hosted link). Without one, this gives a
+    # plain instruction instead of a broken link.
+    link_text = f"<{dashboard_url}|Open today's dashboard>" if dashboard_url else "Today's dashboard is ready - pull the latest changes and open dashboard-automation/dashboard.html"
+    blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": link_text}})
 
     if stale_sources:
         blocks.append({"type": "divider"})
@@ -77,20 +43,10 @@ def build_slack_message(
 
     blocks.append({"type": "divider"})
     blocks.append(
-        {
-            "type": "context",
-            "elements": [
-                {
-                    "type": "mrkdwn",
-                    "text": f"<{dashboard_url}|Open the dashboard> · Run usage: {claude_calls_used}/{claude_daily_cap} Claude calls today",
-                }
-            ],
-        }
+        {"type": "context", "elements": [{"type": "mrkdwn", "text": f"Run usage: {claude_calls_used}/{claude_daily_cap} Claude calls today"}]}
     )
 
-    text = f"OSO dashboard — {date_str}\n" + "\n".join(
-        f"{v['view_label']}: " + "; ".join(_headline_line(m) for m in v["headline_metrics"]) for v in views
-    )
+    text = f"OSO dashboard — {date_str}: " + (f"{dashboard_url}" if dashboard_url else "pull the latest changes and open dashboard-automation/dashboard.html")
 
     return {"blocks": blocks, "text": text}
 

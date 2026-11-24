@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "4000", "--directory", "docs"],
       "port": 4000
+    },
+    {
+      "name": "oso-dashboard",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4001", "--directory", "dashboard-automation"],
+      "port": 4001
     }
   ]
 }

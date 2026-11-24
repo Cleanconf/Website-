@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OSO Organised internal dashboard</title>
+<style>
+/* ==========================================================================
+   OSO Organised admin dashboard - a plain static HTML file, opened directly
+   (double-click, no server). Real data is written daily to dashboard-data.js
+   by render_dashboard.py from dashboard-automation/data/.
+   Three views (Business, Beta, Social media) in one page, hash-routed
+   (#business, #beta, #social) with no server needed.
+   Structure: 1) tokens  2) page shell  3) shared components  4) view layout
+              5) section parts (tiles, bars, tables)  6) container queries
+   ========================================================================== */
+
+/* 1) DESIGN TOKENS ------------------------------------------------------- */
+:root{
+  --bg:#F6F5F8; --surface:#FFFFFF; --line:#E3E0E9;
+  --ink:#1F1B26; --ink-2:#55525C;
+  --accent:#6B3FB8;            /* PLACEHOLDER brand colour: swap for the real hex */
+  --accent-soft:#EFE8FA;
+  --on-bg:#E6F4EC; --on-ink:#14633A; --on-line:#9BD3B1;
+  --watch-bg:#FFF4DB; --watch-ink:#7A4B00; --watch-line:#F0CF84;
+  --off-bg:#FDE8E8; --off-ink:#9B1C1C; --off-line:#F2A8A8;
+  --good:#14633A; --bad:#9B1C1C; --flat:#55525C;
+  --radius:14px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+
+/* 2) PAGE SHELL ---------------------------------------------------------- */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45}
+[hidden]{display:none !important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.view-wrap{max-width:1240px;margin:14px auto 40px;padding:0 20px}
+.dash{container-type:inline-size}
+
+/* 3) SHARED COMPONENTS --------------------------------------------------- */
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:3px 10px;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.chip.sample{background:var(--accent-soft);border-color:#D5C6EE;color:#43257F}
+.chip.stale{background:var(--watch-bg);border-color:var(--watch-line);color:var(--watch-ink);font-weight:600}
+.src{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.02em;color:#43257F;background:var(--accent-soft);border-radius:6px;padding:1px 7px;white-space:nowrap}
+.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;border:1px solid;white-space:nowrap}
+.status.on{background:var(--on-bg);color:var(--on-ink);border-color:var(--on-line)}
+.status.watch{background:var(--watch-bg);color:var(--watch-ink);border-color:var(--watch-line)}
+.status.off{background:var(--off-bg);color:var(--off-ink);border-color:var(--off-line)}
+.status.mini{font-size:12px;padding:1px 8px}
+
+.delta{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline;font-size:13px}
+.delta.good{color:var(--good)} .delta.bad{color:var(--bad)} .delta.flat{color:var(--flat)}
+.delta .when{color:var(--ink-2)}
+.delta .verdict{font-size:12px;border:1px solid currentColor;border-radius:6px;padding:0 5px}
+.m-label{font-size:13px;color:var(--ink-2)}
+.m-value{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.m-note{display:block;font-size:12px;font-weight:400;color:var(--ink-2);letter-spacing:0}
+.spark{display:block}
+svg[role="img"][viewBox^="0 0 560"]{max-height:200px}
+.spark-cap{font-size:11px;color:var(--ink-2)}
+.smp{font-style:italic;text-decoration:underline dotted;text-underline-offset:3px}
+.muted{color:var(--ink-2);white-space:nowrap}
+
+/* Top bar and view tabs */
+.topbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 18px}
+.brand{display:flex;flex-direction:column}
+.brand h1{margin:0;font-size:20px}
+.brand .date{color:var(--ink-2);font-size:14px}
+.vtabs{display:flex;gap:4px;flex-wrap:wrap}
+.vtab{background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.vtab[aria-selected="true"]{background:var(--accent-soft);border-color:#D5C6EE;color:#43257F}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+
+/* 4) VIEW LAYOUT: Today panel + Insights panel above the fold, then sections */
+.hero{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:14px;margin-top:14px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.panel h2{margin:0;font-size:17px}
+.panel .sub{margin:2px 0 12px;color:var(--ink-2);font-size:13px}
+.today-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ttile{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:4px;align-content:start}
+.ttile .m-value{font-size:24px}
+.t2-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.statusrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.sbtn{display:inline-flex;gap:6px;align-items:center;background:#FAF9FC;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;cursor:pointer}
+.sbtn:hover{border-color:var(--accent)}
+.insights{border-left:6px solid var(--accent)}
+.insights ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.insights li{display:grid;gap:4px;padding:10px 12px;border-radius:10px;background:#FAF9FC;border:1px solid var(--line)}
+.insights .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.prio{font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;border:1px solid;white-space:nowrap}
+.prio.high{background:var(--off-bg);color:var(--off-ink);border-color:var(--off-line)}
+.prio.medium{background:var(--watch-bg);color:var(--watch-ink);border-color:var(--watch-line)}
+.prio.low{background:#EEEDF1;color:#3F3C46;border-color:#CFCCD6}
+.sections{display:grid;gap:14px;margin-top:14px}
+
+/* 5) SECTION PARTS ------------------------------------------------------- */
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:grid;gap:12px;scroll-margin-top:70px}
+.sec-head{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between}
+.sec-head .left{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.sec-head h2{margin:0;font-size:18px}
+.sec-intro{margin:0;color:var(--ink-2);font-size:13px}
+.sec-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;align-items:start}
+.more{border-top:1px solid var(--line);padding-top:10px}
+.more summary{cursor:pointer;font-weight:600;color:var(--accent);padding:2px 0}
+.more .sec-body{margin-top:12px}
+.t2{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;align-content:start}
+.t2.wide{grid-column:1 / -1}
+.t2.span2{grid-column:span 2}
+.t2.placeholder{border-style:dashed;background:#FAF9FC}
+.t2 h3{margin:0;font-size:13px;color:var(--ink-2);font-weight:600}
+.prow{display:grid;gap:2px;padding-top:8px;border-top:1px solid var(--line)}
+.prow:first-of-type{border-top:0;padding-top:0}
+.prow .pl{font-size:12px;color:var(--ink-2)}
+.prow .pv{font-size:22px;font-weight:700;line-height:1.15}
+
+/* Bars: label + bar + number, so the number carries the meaning */
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.bars li{display:grid;grid-template-columns:minmax(90px,1.3fr) 2fr auto;gap:8px;align-items:center;font-size:13px}
+.b-track{height:8px;background:#ECE9F2;border-radius:99px;overflow:hidden}
+.b-fill{display:block;height:100%;background:var(--accent);border-radius:99px}
+.b-val{font-weight:700;white-space:nowrap}
+
+/* Target bar: thin line with a target tick */
+.tb{display:grid;gap:4px}
+.tb-track{position:relative;height:6px;background:#ECE9F2;border-radius:99px}
+.tb-fill{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:99px}
+.tb-target{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--ink);border-radius:2px}
+.tb-cap{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12px;color:var(--ink-2);align-items:center;justify-content:space-between}
+
+/* Small tables */
+.tbl-wrap{overflow-x:auto}
+table.mt{width:100%;border-collapse:collapse;font-size:13px}
+.mt th{font-weight:600;color:var(--ink-2);text-align:left;font-size:12px;padding:4px 8px 6px 0;vertical-align:bottom}
+.mt td{padding:6px 8px 6px 0;border-top:1px solid var(--line);vertical-align:top}
+.mt td.num,.mt th.num{text-align:right}
+.mt tr.you td{background:var(--accent-soft)}
+.mt tr.grp td{background:#F3F1F7;font-weight:700;border-top:1px solid var(--line)}
+table.bench{min-width:760px}
+
+/* Segmented toggle */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:#fff;border:0;padding:6px 14px;cursor:pointer;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.legend{font-size:12px;color:var(--ink-2)}
+
+/* Best post card */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.post{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:6px;background:#fff}
+.post .thumb{height:70px;border-radius:8px;background:repeating-linear-gradient(45deg,#EFEDF4,#EFEDF4 8px,#E6E3ED 8px,#E6E3ED 16px);display:grid;place-items:center;font-size:12px;color:var(--ink-2)}
+.post .who{font-weight:700;font-size:13px}
+.post .cap{font-size:13px}
+.post .eng{font-size:12px;color:var(--ink-2)}
+
+/* Ranked lists */
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.rank li{display:grid;grid-template-columns:28px minmax(110px,1.4fr) 2fr auto;gap:8px;align-items:center;font-size:13px;padding:4px 6px;border-radius:8px}
+.rank li.you{background:var(--accent-soft);border:1px solid #D5C6EE;font-weight:700}
+.rank .pos{color:var(--ink-2);font-weight:700}
+.rank .nodata{grid-column:2 / -1;color:var(--ink-2)}
+.summary-line{font-size:14px;margin:0}
+
+/* v1 layout: side menu + one section at a time */
+.b-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:16px;margin-top:14px;align-items:start}
+.b-nav{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:8px;display:grid;gap:4px;position:sticky;top:70px}
+.b-nav button{display:grid;gap:2px;text-align:left;background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 10px;cursor:pointer}
+.b-nav button[aria-current="true"]{background:var(--accent-soft);border-color:#D5C6EE}
+.b-nav .n-name{font-weight:700}
+.b-nav .n-status{font-size:12px;color:var(--ink-2)}
+.b-main{display:grid;gap:14px;min-width:0}
+.b-main .hero{margin-top:0}
+.sec-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;align-items:start}
+.sec-main{display:grid;gap:14px;min-width:0}
+.sec-layout .insights{position:sticky;top:70px}
+.ov-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.otile{width:100%;min-width:0;display:grid;gap:6px;align-content:start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;cursor:pointer}
+.otile:hover{border-color:var(--accent)}
+.otile .t-name{font-weight:700}
+.otile > *{min-width:0}
+.otile .status,.otile .chip{justify-self:start}
+.otile .t-reason{white-space:normal;overflow-wrap:anywhere}
+.otile .m-label{white-space:normal}
+.otile .m-value{font-size:22px}
+.go{background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:0;font-size:13px;text-align:left}
+.here{font-size:11px;font-weight:700;color:#43257F;background:var(--accent-soft);border-radius:6px;padding:1px 7px}
+table.mtx{width:100%;border-collapse:collapse;font-size:14px}
+.mtx th{font-weight:600;color:var(--ink-2);text-align:left;font-size:12px;padding:4px 10px 8px 0}
+.mtx td{padding:10px 10px 10px 0;border-top:1px solid var(--line);vertical-align:top}
+.mtx td.val{font-size:20px;font-weight:700;white-space:nowrap}
+.mtx tr.xr td{border-top:0;padding-top:0}
+.mtx .delta + .delta{margin-top:2px}
+.sec-head-panel{display:grid;gap:6px}
+.panel h3{margin:0 0 8px;font-size:14px}
+
+/* Footer and toast */
+.footer{display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between;color:var(--ink-2);font-size:13px;padding:14px 4px 4px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#2B2236;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:20}
+
+/* 6) CONTAINER QUERIES: one set of components for desktop and the 390px frame */
+@container (max-width: 1100px){
+  .hero{grid-template-columns:1fr}
+  .sec-layout{grid-template-columns:minmax(0,1fr)}
+  .sec-layout .insights{order:-1}
+}
+@container (max-width: 760px){
+  .b-layout{grid-template-columns:minmax(0,1fr)}
+  .b-nav{position:static;display:flex;overflow-x:auto;max-width:100%;min-width:0}
+  .b-nav button{min-width:150px}
+}
+@container (max-width: 600px){
+  .mtx thead{display:none}
+  .mtx tr.mr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-top:1px solid var(--line)}
+  .mtx tr.mr td{border:0;padding:0;text-align:left}
+  .mtx tr.mr td:nth-child(2){text-align:right}
+  .mtx tr.mr td:nth-child(n+3){grid-column:1 / -1}
+  .mtx tr.xr{display:block}
+  .mtx tr.xr td{display:block;border:0;padding:0 0 10px}
+}
+@container (max-width: 700px){
+  .today-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topbar{align-items:flex-start}
+}
+@container (max-width: 480px){
+  .hero{display:flex;flex-direction:column}
+  .hero .insights{order:-1}
+  .t2.span2{grid-column:auto}
+  .topbar{padding:12px}
+  .brand h1{font-size:18px}
+  .vtabs{flex-wrap:nowrap;overflow-x:auto;width:100%}
+  .panel{padding:12px}
+  .ttile{padding:8px 10px}
+  .ttile .m-value{font-size:20px}
+  .sec{padding:12px}
+  .sec-body{grid-template-columns:1fr}
+  .m-value{font-size:22px}
+  .bars li{grid-template-columns:minmax(70px,1.2fr) 1.6fr auto}
+  .rank li{grid-template-columns:22px minmax(80px,1.2fr) 1.4fr auto}
+}
+</style>
+</head>
+<body>
+
+<main class="view-wrap">
+  <div class="dash" id="root"></div>
+</main>
+
+<script src="dashboard-data.js"></script>
+<script>
+/* ==========================================================================
+   CONSTANTS AND HELPERS
+   In the real build, numbers come from the 06:00 refresh job. Changes are
+   computed from the raw numbers so they can never disagree with the tiles.
+   ========================================================================== */
+/* window.DASHBOARD_DATA is written daily by render_dashboard.py from dashboard-automation/data/ - see dashboard-data.example.js for the shape when no real file is present yet. */
+const D = window.DASHBOARD_DATA || { meta:{ todayLabel:"Not available yet", yesterdayLabel:"Not available yet", runUsage:{ claudeCalls:0 } }, business:null, beta:null, social:null };
+const TODAY_LABEL = D.meta.todayLabel;
+const YESTERDAY_LABEL = D.meta.yesterdayLabel;
+const RUN_USAGE = D.meta.runUsage;
+const NA_VALUE = "Not available yet";
+
+/* number formatters */
+const gbp = n => "£" + n.toLocaleString("en-GB", { minimumFractionDigits:2, maximumFractionDigits:2 });
+const int = n => n.toLocaleString("en-GB");
+const pct = n => (Math.round(n*10)/10) + "%";
+const ms  = n => n + " ms";
+const sec = s => s < 60 ? s + " s" : Math.floor(s/60) + " m " + String(s%60).padStart(2,"0") + " s";
+const mins = m => m < 60 ? m + " m" : Math.floor(m/60) + " h " + String(m%60).padStart(2,"0") + " m";
+const num1 = n => (Math.round(n*10)/10).toString();
+
+const STATUS = { on:{glyph:"✓",label:"On target"}, watch:{glyph:"!",label:"Watch"}, off:{glyph:"✕",label:"Off target"} };
+const ARROW = { up:"▲", down:"▼", flat:"▬" };
+const WORD  = { up:"Up", down:"Down", flat:"" };
+
+/* change(): kind 'pct' = relative %, 'pp' = percentage points, 'abs' = count */
+function change(kind, from, to, fmt){
+  const diff = to - from;
+  if (Math.abs(diff) < 1e-9) return { dir:"flat", text:"No change" };
+  const sign = diff > 0 ? "+" : "−";
+  if (kind === "pp"){
+    const dir = Math.abs(diff) < 0.05 ? "flat" : (diff > 0 ? "up" : "down");
+    return dir === "flat" ? { dir, text:"No change" } : { dir, text: sign + Math.abs(diff).toFixed(1) + " pts" };
+  }
+  if (kind === "pct" && from !== 0){
+    const p = diff / from * 100;
+    const dir = Math.abs(p) < 0.5 ? "flat" : (p > 0 ? "up" : "down");
+    return dir === "flat" ? { dir, text:"No change" } : { dir, text: sign + Math.abs(p).toFixed(1) + "%" };
+  }
+  const a = Math.abs(diff);
+  return { dir: diff > 0 ? "up" : "down", text: sign + (fmt ? fmt(a) : (Number.isInteger(a) ? a : a.toFixed(1))) };
+}
+
+/* Delta line: arrow + sign + words + colour. better = 'up' | 'down' | null (neutral) */
+function Delta(c, better, when, verdict){
+  const tone = c.dir === "flat" || !better ? "flat" : (c.dir === better ? "good" : "bad");
+  const v = verdict && better && c.dir !== "flat" ? `<span class="verdict">${tone === "good" ? "better" : "worse"}</span>` : "";
+  return `<div class="delta ${tone}"><span aria-hidden="true">${ARROW[c.dir]}</span><span class="sr">${WORD[c.dir]} </span><b>${c.text}</b><span class="when">${when}</span>${v}</div>`;
+}
+const Src = name => `<span class="src">${name}</span>`;
+const StatusPill = s => `<span class="status ${s}"><span aria-hidden="true">${STATUS[s].glyph}</span>${STATUS[s].label}</span>`;
+const StaleChip = txt => `<span class="chip stale"><span aria-hidden="true">⏱</span>Stale: ${txt}</span>`;
+
+function Sparkline(values){
+  const w = 96, h = 30, p = 3, n = values.length;
+  const min = Math.min(...values), max = Math.max(...values), span = (max - min) || 1;
+  const pts = values.map((v,i) => [p + i*(w-2*p)/(n-1), h - p - (v-min)/span*(h-2*p)]);
+  const d = pts.map((q,i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" ");
+  const last = pts[n-1];
+  return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Last ${n} points, from ${values[0]} to ${values[n-1]}">
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${last[0]}" cy="${last[1]}" r="3" fill="var(--accent)"/></svg>`;
+}
+
+/* BarList: label, bar, number. rows = [{label, value, text}] */
+function BarList(rows, max){
+  const m = max || Math.max(...rows.map(r => r.value), 1);
+  return `<ul class="bars">${rows.map(r => `<li><span>${r.label}</span><span class="b-track"><span class="b-fill" style="width:${Math.max(2, r.value/m*100)}%"></span></span><span class="b-val">${r.text ?? r.value}</span></li>`).join("")}</ul>`;
+}
+
+/* TargetBar: thin line, dark tick = target. lowerIsBetter flips the pass test */
+function TargetBar(o){
+  const pos = v => Math.min(100, Math.max(0, (v - o.min) / (o.max - o.min) * 100));
+  const ok = o.lowerIsBetter ? o.value <= o.target : o.value >= o.target;
+  return `<div class="tb"><div class="tb-track"><span class="tb-fill" style="width:${pos(o.value)}%"></span><span class="tb-target" style="left:${pos(o.target)}%" title="Target"></span></div>
+    <div class="tb-cap"><span>${o.label ? o.label + ": " : ""}<b>${o.text}</b></span>
+    <span>${o.targetText}${o.placeholder ? " (placeholder)" : ""}</span>
+    <span class="status mini ${ok ? "on" : "off"}"><span aria-hidden="true">${ok ? "✓" : "✕"}</span>${ok ? "Meeting target" : (o.lowerIsBetter ? "Over target" : "Below target")}</span></div></div>`;
+}
+
+/* TrendChart: 12-month line */
+function TrendChart(labels, values, desc){
+  const W = 560, H = 170, L = 34, R = 12, T = 14, B = 26;
+  const max = Math.ceil(Math.max(...values) / 5) * 5, n = values.length;
+  const x = i => L + i * (W - L - R) / (n - 1), y = v => T + (H - T - B) * (1 - v / max);
+  const d = values.map((v,i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+  const grid = [0, max/2, max].map(g => `<line x1="${L}" x2="${W-R}" y1="${y(g)}" y2="${y(g)}" stroke="#E3E0E9"/><text x="${L-6}" y="${y(g)+4}" text-anchor="end" font-size="11" fill="#55525C">${g}</text>`).join("");
+  const xl = labels.map((l,i) => `<text x="${x(i)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#55525C">${l}</text>`).join("");
+  const last = values[n-1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${desc}">${grid}${xl}
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round"/>
+    ${values.map((v,i) => `<circle cx="${x(i)}" cy="${y(v)}" r="${i === n-1 ? 4.5 : 2.6}" fill="var(--accent)"/>`).join("")}
+    <text x="${x(n-1)}" y="${y(last)-10}" text-anchor="end" font-size="12" font-weight="700" fill="#1F1B26">${last}</text></svg>`;
+}
+
+/* ==========================================================================
+   TILE COMPONENTS
+   ========================================================================== */
+/* TrioTile (Today panel): yesterday vs day before and vs same weekday last week */
+/* "If there is nothing to compare, show 'No comparison' in grey" (spec 7.2) - a missing prior value is not the same as a zero change. */
+const NoComparison = () => `<div class="delta flat"><span class="muted">No comparison</span></div>`;
+function TrioTile(m){
+  if (m.v == null) return `<article class="ttile"><div class="t2-top"><span class="m-label">${m.label}</span>${Src(m.src)}</div><div class="m-value muted">${NA_VALUE}</div></article>`;
+  const c1 = m.d1 == null ? null : change(m.kind, m.d1, m.v, m.fmt);
+  const c7 = m.d7 == null ? null : change(m.kind, m.d7, m.v, m.fmt);
+  return `<article class="ttile"><div class="t2-top"><span class="m-label">${m.label}</span>${Src(m.src)}</div>
+    <div class="m-value">${m.fmt(m.v)}</div>
+    ${c1 ? Delta(c1, m.better, "vs day before", true) : NoComparison()}
+    ${c7 ? Delta(c7, m.better, "vs same day last week", false) : NoComparison()}
+    ${m.stale ? `<span class="chip stale"><span aria-hidden="true">⏱</span>Stale</span>` : ""}</article>`;
+}
+/* PeriodTile / StatTile now return metric DESCRIPTORS. SectionPage renders them
+   as rows of one metrics table (v1 layout). ListTile still returns HTML blocks.
+   A null value/cur (not yet measurable - see render_dashboard.py) renders the
+   same row shape with "Not available yet" and no comparison, never a guess. */
+function PeriodTile(m){
+  return m.rows.map(r => r.cur == null
+    ? { kind:"metric", label:m.label, sub:r.lab, src:m.src, value:NA_VALUE, deltas:[] }
+    : { kind:"metric", label:m.label, sub:r.lab, src:m.src, value:m.fmt(r.cur),
+        deltas: r.prev == null ? [] : [{ c:change(m.kind, r.prev, r.cur, m.fmt), better:m.better, when:r.cmp, verdict:true }] });
+}
+function StatTile(m){
+  if (m.value == null) return { kind:"metric", label:m.label, src:m.src, value:NA_VALUE, note:m.note, placeholder:true, deltas:[] };
+  return { kind:"metric", label:m.label, src:m.src, value:m.value, note:m.note, extra:m.extra, stale:m.stale, placeholder:m.cls === "placeholder",
+    deltas:(m.deltas || []).filter(d => d.from != null && d.to != null).map(d => ({ c:change(d.kind, d.from, d.to, d.fmt), better:d.better, when:d.when, verdict:d.verdict })) };
+}
+/* ListTile: a titled block of free HTML (bars, tables) */
+function ListTile(title, src, html, wide, stale){
+  return `<article class="t2 ${wide === "span2" ? "span2" : (wide ? "wide" : "")}" data-src="${src || ""}"><div class="t2-top"><span class="m-label">${title}</span>${src ? Src(src) : ""}</div>${html}${stale ? StaleChip(stale) : ""}</article>`;
+}
+/* Small table with delta cells: cols = header labels, rows = arrays of HTML strings */
+function Table(cols, rows){
+  return `<div class="tbl-wrap"><table class="mt"><thead><tr>${cols.map((c,i) => `<th class="${i ? "num" : ""}">${c}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(r => `<tr>${r.map((c,i) => `<td class="${i ? "num" : ""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+const cell = (value, c, better, when) => `<b>${value}</b>${c ? Delta(c, better, when, false) : ""}`;
+
+/* Helpers to split a section's items into metric rows and HTML blocks */
+const secItems = s => [].concat(s.head || [], s.detail || []).flat(Infinity);
+const metricsOf = s => secItems(s).filter(i => i && typeof i === "object" && i.kind === "metric");
+const blocksOf = s => secItems(s).filter(i => typeof i === "string");
+
+/* MetricsTable: Metric | Value | Change | Source, as in v1 */
+function MetricsTable(rows){
+  return `<div class="tbl-wrap"><table class="mtx"><thead><tr><th>Metric</th><th>Value</th><th>Change</th><th>Source</th></tr></thead><tbody>${rows.map(r => `
+    <tr class="mr"><td><b>${r.label}</b>${r.sub ? `<span class="m-note">${r.sub}</span>` : ""}${r.note ? `<span class="m-note">${r.note}</span>` : ""}${r.stale ? `<div style="margin-top:4px">${StaleChip(r.stale)}</div>` : ""}</td>
+      <td class="val">${r.value}</td>
+      <td>${r.deltas.length ? r.deltas.map(d => Delta(d.c, d.better, d.when, d.verdict)).join("") : '<span class="muted">No comparison</span>'}</td>
+      <td>${r.src ? Src(r.src) : '<span class="muted">Not set</span>'}</td></tr>
+    ${r.extra ? `<tr class="xr"><td colspan="4">${r.extra}</td></tr>` : ""}`).join("")}</tbody></table></div>`;
+}
+
+/* InsightsPanel: the view's 3 actions. Actions for the open section come first. */
+function InsightsPanel(insights, secId, sections){
+  const ordered = insights.slice().sort((a,b) => (b.sec === secId) - (a.sec === secId));
+  const name = id => (sections.find(s => s.id === id) || {}).title;
+  return `<section class="panel insights" aria-labelledby="ins-h">
+    <h2 id="ins-h">Insights: what to do</h2><p class="sub">Three actions, most important first.</p>
+    <ol>${ordered.map(i => `<li><div class="row"><span class="prio ${i.p.toLowerCase()}">${i.p}</span>${Src(i.src)}${i.sec === secId ? '<span class="here">This section</span>' : ""}</div>
+      <span>${i.t}</span>${i.sec && i.sec !== secId ? `<button class="go" data-open="${i.sec}">Open: ${name(i.sec)}</button>` : ""}</li>`).join("")}</ol></section>`;
+}
+
+/* Overview page: Today + Insights above the fold, then one status tile per section */
+function OverviewPage(m){
+  const tiles = m.sections.map(s => {
+    const r = metricsOf(s)[0];
+    return `<button class="otile" data-open="${s.id}"><span class="t-name">${s.short || s.title}</span>${StatusPill(s.status)}
+      ${r ? `<span class="m-label">${r.label}${r.sub ? ", " + r.sub.toLowerCase() : ""}</span><span class="m-value">${r.value}</span>${r.deltas[0] ? Delta(r.deltas[0].c, r.deltas[0].better, r.deltas[0].when, false) : ""}` : ""}
+      <span class="t-reason muted">${s.reason}</span>${s.stale ? '<span class="chip stale"><span aria-hidden="true">⏱</span>Stale</span>' : ""}</button>`;
+  }).join("");
+  return `<div class="hero">
+      <section class="panel" aria-labelledby="today-h"><h2 id="today-h">Today</h2>
+        <p class="sub">Yesterday (${YESTERDAY_LABEL}) compared with the day before and the same weekday last week.</p>
+        <div class="today-grid">${m.today.map(TrioTile).join("")}</div></section>
+      ${InsightsPanel(m.insights, null, m.sections)}</div>
+    <section aria-label="Status of each section"><h2 class="sub" style="margin:0 0 8px;font-size:15px;color:var(--ink)">Sections</h2><div class="ov-tiles">${tiles}</div></section>`;
+}
+
+/* Section page: header, metrics table and breakdowns on the left, insights alongside */
+function SectionPage(m, s){
+  const rows = metricsOf(s), blocks = blocksOf(s);
+  return `<div class="sec-layout"><div class="sec-main">
+      <section class="panel sec-head-panel"><div class="sec-head"><div class="left"><h2>${s.title}</h2>${StatusPill(s.status)}${(s.srcs || []).map(Src).join("")}${s.stale ? StaleChip(s.stale) : ""}</div></div>
+        <p class="sec-intro">${s.reason}</p></section>
+      ${rows.length ? `<section class="panel" aria-label="Metrics"><h3>Metrics</h3>${MetricsTable(rows)}</section>` : ""}
+      ${blocks.length ? `<section class="panel" aria-label="Breakdowns"><h3>Breakdowns</h3><div class="sec-body">${blocks.join("")}</div></section>` : ""}
+    </div>${InsightsPanel(m.insights, s.id, m.sections)}</div>`;
+}
+
+/* Regroup a view's sections so the side menu is one item per data source (as in v1) */
+const WORST = { off:3, watch:2, on:1 };
+function regroup(m, defs){
+  const idFor = src => (defs.find(d => d.key === src) || defs[0]).id;
+  const sections = defs.map(d => {
+    const rows = [], blocks = [], from = []; let status = "on", stale = null; const reasons = [];
+    m.sections.forEach(sec => {
+      const r = metricsOf(sec).filter(x => (x.src || sec.srcs[0]) === d.key);
+      const b = blocksOf(sec).filter(h => { const x = /data-src="([^"]*)"/.exec(h); return ((x && x[1]) || sec.srcs[0]) === d.key; });
+      if (!r.length && !b.length) return;
+      rows.push(...r); blocks.push(...b); from.push(sec.short || sec.title);
+      if (WORST[sec.status] > WORST[status]) status = sec.status;
+      if (sec.status !== "on" && reasons.length < 2) reasons.push(sec.reason);
+      if (sec.stale && sec.stale.indexOf(d.key) === 0) stale = sec.stale;
+    });
+    if (!rows.length && !blocks.length) return null;
+    return { id:d.id, title:d.title, short:d.short, status, srcs:[d.key], stale,
+      reason:d.reason || ((reasons.length ? reasons.join(" ") : "All measures from this source are on target.") + " Covers: " + from.join(", ") + "."), head:rows, detail:blocks };
+  }).filter(Boolean);
+  return { today:m.today, insights:m.insights.map(i => Object.assign({}, i, { sec:idFor(i.src) })), sections };
+}
+const Footer = () => `<footer class="footer"><span>Run usage: ${RUN_USAGE.claudeCalls}/10 Claude calls today</span>
+  <span><a href="#targets-settings" data-targets>Targets settings</a> · Next refresh 06:00 tomorrow</span></footer>`;
+
+/* ==========================================================================
+   SHARED BLOCK: usage metrics (used in Business overview and Beta).
+   PostHog captures time-of-day, device and platform automatically on every
+   event - no new instrumentation needed - but the query for them is not
+   written yet, so these show "Not available yet" rather than a guess.
+   ========================================================================== */
+function UsageMetrics(){
+  return [
+    ListTile("Time of day (share of usage)", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
+    StatTile({label:"Total hours in app, this week", src:"PostHog", value:null}),
+    ListTile("Device", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
+    ListTile("Platform", "PostHog", `<p class="muted">${NA_VALUE}</p>`)
+  ];
+}
+
+/* ==========================================================================
+   VIEW 1: BUSINESS OVERVIEW
+   ========================================================================== */
+function viewBusiness(){
+  const d = D.business;
+  if (!d) return { today:[], insights:[], sections:[] };
+  const today = [
+    { label:"New trial sign-ups", src:"PostHog", kind:"abs", better:"up", fmt:int, ...d.today.newTrial },
+    { label:"New paid sign-ups", src:"Stripe", kind:"abs", better:"up", fmt:int, ...d.today.newPaid },
+    { label:"Revenue", src:"Stripe", kind:"abs", better:"up", fmt:gbp, ...d.today.revenue },
+    { label:"Failed payments", src:"Stripe", kind:"abs", better:"down", fmt:int, ...d.today.failedPayments },
+    { label:"Website visitors", src:"PostHog", kind:"pct", better:"up", fmt:int, v:null },
+    { label:"Facebook + Instagram followers gained", src:"Meta", kind:"abs", better:"up", fmt:int, ...d.today.followersGained }
+  ];
+  const insights = d.insights;
+  const wk = "This week to date", mo = "This month to date";
+  const sections = [
+    { id:"growth", title:"Revenue and sign-ups", short:"Growth", status:d.growth.status, srcs:["Stripe","PostHog"],
+      reason:d.growth.reason,
+      head: [
+        PeriodTile({label:"Revenue", src:"Stripe", kind:"pct", better:"up", fmt:gbp, rows:[{lab:wk,...d.growth.revenue.week,cmp:"vs last week (LW)"},{lab:mo,...d.growth.revenue.month,cmp:"vs last month (LM)"}]}),
+        PeriodTile({label:"New trial sign-ups", src:"PostHog", kind:"pct", better:"up", fmt:int, rows:[{lab:wk,...d.growth.newTrial.week,cmp:"vs LW"},{lab:mo,...d.growth.newTrial.month,cmp:"vs LM"}]}),
+        PeriodTile({label:"New paid sign-ups", src:"Stripe", kind:"pct", better:"up", fmt:int, rows:[{lab:wk,...d.growth.newPaid.week,cmp:"vs LW"},{lab:mo,...d.growth.newPaid.month,cmp:"vs LM"}]})
+      ] },
+    { id:"paying", title:"Total paying users", short:"Paying users", status:d.paying.status, srcs:["Stripe"],
+      reason:d.paying.reason,
+      head: [StatTile({label:"Paying users now", src:"Stripe", value:d.paying.now == null ? null : String(d.paying.now), deltas:[
+          {kind:"pct", better:"up", ...d.paying.vsLW, when:"vs LW", verdict:true},
+          {kind:"pct", better:"up", ...d.paying.vsLM, when:"vs LM", verdict:true}]}),
+        ListTile("Paying users, last 12 months", "Stripe",
+            d.paying.trend12mo && d.paying.trend12mo.values.length > 1 ? TrendChart(d.paying.trend12mo.labels, d.paying.trend12mo.values, "Line chart of paying users by month") : `<p class="muted">Not enough history yet - needs at least two months of data.</p>`, "span2")] },
+    { id:"retention", title:"Churn and failed payments", short:"Churn", status:d.retention.status, srcs:["Stripe","PostHog"],
+      reason:d.retention.reason,
+      head: [
+        PeriodTile({label:"Churn (users who cancelled)", src:"Stripe", kind:"abs", better:"down", fmt:int, rows:[{lab:wk,...d.retention.churn.week,cmp:"vs LW"},{lab:mo,...d.retention.churn.month,cmp:"vs LM"}]}),
+        PeriodTile({label:"Failed payments", src:"Stripe", kind:"abs", better:"down", fmt:int, rows:[{lab:wk,...d.retention.failedPayments.week,cmp:"vs LW"},{lab:mo,...d.retention.failedPayments.month,cmp:"vs LM"}]}),
+        ListTile("Reasons for churn, yesterday", "Stripe", d.retention.churnReasons && d.retention.churnReasons.length ? BarList(d.retention.churnReasons) : `<p class="muted">${NA_VALUE} - no cancellations yesterday.</p>`)
+      ] },
+    { id:"marketing", title:"Marketing channels", short:"Marketing", status:d.marketing.status, srcs:["PostHog","Stripe","Meta"], stale:d.marketing.stale,
+      reason:d.marketing.reason,
+      head: [
+        ListTile("Free trial sign-ups by channel", "PostHog", `<p class="muted">${NA_VALUE} - sign-up channel is not tracked yet.</p>`),
+        ListTile("Paid sign-ups by channel", "Stripe", `<p class="muted">${NA_VALUE} - sign-up channel is not tracked yet.</p>`),
+        StatTile({label:"Reach across Facebook and Instagram, this week", src:"Meta", value:null, note:"Not public with the current Meta permissions"})
+      ],
+      detail: [
+        ListTile("Engagement by social channel (% of total)", "Meta", `<p class="muted">${NA_VALUE} - Facebook engagement is not available with current permissions.</p>`, true),
+        ListTile("Followers by social channel", "Meta", d.marketing.followers ? Table(["Channel","Total","This week","This month"],
+          d.marketing.followers.map(f => [f.channel, `<b>${int(f.total)}</b>`,
+            Delta(change("abs", f.week.prev, f.week.cur), "up", "vs LW", false),
+            Delta(change("abs", f.month.prev, f.month.cur), "up", "vs LM", false)])) : `<p class="muted">${NA_VALUE}</p>`, true),
+        UsageMetrics()
+      ] },
+    { id:"website", title:"Website", short:"Website", status:"watch", srcs:["PostHog"],
+      reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
+      head: [
+        StatTile({label:"Total visitors since launch", src:"PostHog", value:null}),
+        StatTile({label:"New visitors", src:"PostHog", value:null}),
+        StatTile({label:"Total dwell time", src:"PostHog", value:null})
+      ],
+      detail: [
+        ListTile("Most visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
+        ListTile("Least visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`)
+      ] }
+  ];
+  return { today, insights, sections };
+}
+
+/* ==========================================================================
+   VIEW 2: BETA
+   ========================================================================== */
+/* ==========================================================================
+   VIEW 2: BETA
+   Not wired to real numbers yet - every metric here needs new PostHog
+   queries (several of the underlying events already exist, e.g.
+   task_completed, payment_marked_paid, client_created,
+   payment_reminder_sent - see the PostHog event-taxonomy audit; the
+   queries for them just are not written yet). Shown as "Not available
+   yet" throughout rather than a guess, with the real section structure
+   and side menu already in place for when they are built.
+   ========================================================================== */
+function viewBeta(){
+  const today = [
+    { label:"Active beta users", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Tasks ticked as done", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Paid ticks", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Clients added", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Lina reminders confirmed sent", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null }
+  ];
+  const insights = [];
+  const na = (label, src) => StatTile({label, src, value:null});
+  const sections = [
+    { id:"health", title:"Beta health at a glance", short:"Health", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - needs new PostHog event queries.",
+      head: [na("Feature coverage","PostHog"), na("Set-up is quick (median time)","PostHog"), na("Users who don't drop off","PostHog")] },
+    { id:"usability", title:"Usability", short:"Usability", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - Client Effort Score needs an in-app survey (no source yet).",
+      head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog"), na("Speed to set up (median)","PostHog")] },
+    { id:"funnel", title:"Meeting Booking Conversion Rate (task funnel)", short:"Task funnel", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - needs a new PostHog query grouping tasks by outcome.",
+      head: [na("Tasks ticked through to paid","PostHog")] },
+    { id:"recovery", title:"Payment recovery rate", short:"Recovery", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - needs a new PostHog query on payment_reminder_sent.",
+      head: [na("Lina reminders confirmed as sent","PostHog"), na("Paid within 7 days of a sent reminder","PostHog")] },
+    { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - needs new PostHog event queries.",
+      head: [na("Dashboard sessions per user, per week","PostHog"), na("Payment recording","PostHog")] },
+    { id:"overall", title:"Overall", short:"Overall", status:"watch", srcs:["PostHog"],
+      reason:"Not measured yet - needs new PostHog event queries. Accessibility and customer support messages have no source at all yet.",
+      head: [na("Churn: never used after sign-up","PostHog"), na("Average session (dwell time)","PostHog"), na("Customer support messages, this week","PostHog")] },
+    { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog"],
+      reason:"Payment acceptance/success rate and straight-through processing can be built from data already collected - just not wired into this page yet.",
+      head: [na("Payment acceptance and success rate","Stripe"), na("Straight-through processing rate","Stripe"), na("Onboarding cycle time","PostHog")] },
+    { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog"],
+      reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
+      head: [na("Visitors to the sign-up page","PostHog"), na("Sign-up page dwell time","PostHog")] }
+  ];
+  return { today, insights, sections };
+}
+
+function viewSocial(){
+  const d = D.social;
+  if (!d) return { today:[], insights:[], sections:[] };
+  const today = [
+    { label:"Instagram followers gained", src:"Meta", kind:"abs", better:"up", fmt:int, ...d.today.igFollowersGained },
+    { label:"Instagram engagement rate", src:"Meta", kind:"pp", better:"up", fmt:pct, ...d.today.igEngagementRate },
+    { label:"Instagram reach", src:"Meta", kind:"pct", better:"up", fmt:int, v:null },
+    { label:"Facebook followers gained", src:"Meta", kind:"abs", better:"up", fmt:int, ...d.today.pageFollowersGained },
+    { label:"Facebook engagement rate", src:"Meta", kind:"pp", better:"up", fmt:pct, v:null },
+    { label:"Facebook reach", src:"Meta", kind:"pct", better:"up", fmt:int, v:null }
+  ];
+  const insights = d.insights;
+  const na = (label) => `<p class="muted">${NA_VALUE} - ${label}</p>`;
+  const naStat = (label, note) => StatTile({label, src:"Meta", value:null, note});
+  const platformSection = (id, name, followers, bestPost, engagementRate, status, reason) => ({
+    id, title:name, short:name, status, srcs:["Meta"], reason,
+    head: [
+      StatTile({label:name + " followers now", src:"Meta", value:followers.now == null ? null : String(followers.now), deltas:[
+        {kind:"abs", better:"up", ...followers.vsYesterday, when:"vs day before", verdict:true},
+        {kind:"abs", better:"up", ...followers.vsLastWeek, when:"vs same day last week", verdict:false}]}),
+      bestPost ? StatTile({label:name + " best post, yesterday", src:"Meta", value:`${bestPost.likes} likes, ${bestPost.comments} comments`, note:bestPost.permalink}) : naStat(name + " best post, yesterday", name === "Facebook" ? "Needs the pages_read_engagement permission working for this token" : "No post yesterday"),
+      engagementRate == null ? naStat(name + " engagement rate", name === "Facebook" ? "Needs the pages_read_engagement permission" : "No post to measure yesterday") : StatTile({label:name + " engagement rate (best post)", src:"Meta", value:pct(engagementRate * 100)}),
+      naStat(name + " reach, yesterday", "Needs the instagram_manage_insights permission (Instagram) or a working Page Insights call (Facebook)")
+    ],
+    detail: [
+      ListTile(name + ": benchmark against competitors and influencers", "Meta", na("not built yet, needs a decision on data source (manual entry or a paid tool) - see the step 0 audit"), true)
+    ]
+  });
+  const sections = [
+    platformSection("facebook", "Facebook", d.facebook.followers, d.facebook.bestPost, d.facebook.engagementRate, d.facebook.status, d.facebook.reason),
+    platformSection("instagram", "Instagram", d.instagram.followers, d.instagram.bestPost, d.instagram.engagementRate, d.instagram.status, d.instagram.reason)
+  ];
+  return { today, insights, sections };
+}
+
+/* ==========================================================================
+   APP: top bar with view tabs, per-root state, event handling
+   ========================================================================== */
+const VIEWS = {
+  beta:{ label:"Beta", render:m => regroup(viewBeta(m), [
+    {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"}, {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}]) },
+  social:{ label:"Social media", render:viewSocial },
+  business:{ label:"Business", render:m => regroup(viewBusiness(m), [
+    {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}, {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"},
+    {id:"meta", key:"Meta", short:"Meta", title:"Meta (Facebook and Instagram)"}]) } };
+
+function Nav(m, current){
+  const items = [{ id:"overview", name:"Overview", line:"What needs attention" }].concat(m.sections.map(s =>
+    ({ id:s.id, name:s.short, line:STATUS[s.status].glyph + " " + STATUS[s.status].label + (s.stale ? " · stale" : "") })));
+  return `<nav class="b-nav" aria-label="Sections">${items.map(it => `<button data-open="${it.id}" ${it.id === current ? 'aria-current="true"' : ""}><span class="n-name">${it.name}</span><span class="n-status">${it.line}</span></button>`).join("")}</nav>`;
+}
+
+function mountApp(root, start, syncHash){
+  const st = { view:start, sec:"overview", platform:"instagram", metric:"followers" };
+  root.innerHTML = `<div class="dash-inner"><div data-top></div><div class="b-layout"><div data-nav></div><div class="b-main" data-content></div></div><div data-foot></div></div>`;
+  const top = root.querySelector("[data-top]"), nav = root.querySelector("[data-nav]"), content = root.querySelector("[data-content]"), foot = root.querySelector("[data-foot]");
+  function drawTop(){
+    top.innerHTML = `<header class="topbar"><div class="brand"><h1>OSO Organised</h1><span class="date">${TODAY_LABEL}</span></div>
+      <nav class="vtabs" role="tablist" aria-label="Views">${Object.entries(VIEWS).map(([k,v]) => `<button class="vtab" role="tab" data-view="${k}" aria-selected="${k === st.view}">${v.label}</button>`).join("")}</nav>
+      <div class="chips"><span class="chip">Data as of 06:00 GMT</span></div></header>`;
+  }
+  function drawContent(){
+    const m = VIEWS[st.view].render(st), sec = m.sections.find(s => s.id === st.sec);
+    if (!sec) st.sec = "overview";
+    nav.innerHTML = Nav(m, st.sec);
+    content.innerHTML = sec ? SectionPage(m, sec) : OverviewPage(m);
+    foot.innerHTML = Footer();
+  }
+  root.addEventListener("click", e => {
+    const t = e.target.closest("[data-view],[data-open],[data-platform],[data-metric],[data-targets]");
+    if (!t) return;
+    if (t.dataset.view){ st.view = t.dataset.view; st.sec = "overview"; drawTop(); drawContent(); if (syncHash) history.replaceState(null, "", "#" + st.view); }
+    else if (t.dataset.open){ st.sec = t.dataset.open; drawContent(); root.querySelector(".topbar").scrollIntoView({ behavior:"smooth", block:"start" }); }
+    else if (t.dataset.platform){ st.platform = t.dataset.platform; drawContent(); }
+    else if (t.dataset.metric){ st.metric = t.dataset.metric; drawContent(); }
+    else if (t.hasAttribute("data-targets")){
+      e.preventDefault();
+      const toast = document.createElement("div"); toast.className = "toast"; toast.setAttribute("role", "status");
+      toast.textContent = "Placeholder: this opens the targets settings page in the real build.";
+      document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000);
+    }
+  });
+  drawTop(); drawContent();
+  return { set(view){ st.view = view; st.sec = "overview"; drawTop(); drawContent(); } };
+}
+
+const app = mountApp(document.getElementById("root"), VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : "beta", true);
+
+/* #business, #beta, #social in the address - normal in-page routes, no server needed for a double-click-open file. */
+function route(){
+  const h = location.hash.slice(1);
+  if (VIEWS[h]) app.set(h);
+}
+window.addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>

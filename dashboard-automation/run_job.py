@@ -3,7 +3,8 @@
 Orchestrates one run of the dashboard job: fetches Stripe/PostHog/Meta for
 a London date, stores the snapshot and rollups, flags anomalies, asks
 Claude for 3 actions per view (skipped gracefully with no key or nothing
-flagged), and posts the Slack summary across both views.
+flagged), writes a per-view summary for the (future) static HTML
+dashboard page, and posts a short Slack message linking to it.
 
 Usage:
     python3 run_job.py                        # yesterday (London), normal run
@@ -23,6 +24,7 @@ import traceback
 from date_utils import dates_between_inclusive, yesterday_london
 from formatting import format_count, format_pence
 from insights import generate_insight
+from render_dashboard import write_dashboard_data
 from rollups import METRIC_KINDS_BY_SOURCE, build_rollup, rollup_input_date_range
 from rules import flag_all_metrics, seven_day_average, status_word
 from slack_post import build_failure_notice, build_slack_message, post_to_slack
@@ -36,6 +38,7 @@ from storage import (
     get_run,
     get_targets_config,
     has_successful_snapshot,
+    write_dashboard_summary,
     write_insight,
     write_rollup,
     write_run,
@@ -189,13 +192,19 @@ def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run:
 
         view_sections.append({"view": view["id"], "view_label": view["label"], "headline_metrics": headline_metrics, "actions": insight["actions"], "notes": notes})
 
+    # Persisted for the (future) static HTML dashboard page to read - never
+    # shown directly in Slack, which only gets a link to it (see slack_post.py).
+    write_dashboard_summary(date_str, {"date": date_str, "views": view_sections})
+    write_dashboard_data(date_str)  # dashboard-data.js, read by dashboard.html
+
     stale_sources = [s for s in DASHBOARD_SOURCES if source_statuses[s] == "stale"]
 
+    # No dashboard_url yet - there is no dashboard page at all (nothing in
+    # oso-frontend, nothing hosted anywhere). build_slack_message simply
+    # omits the "Open the dashboard" link when this is not set.
     message = build_slack_message(
         date_str=date_str,
-        views=view_sections,
         stale_sources=stale_sources,
-        dashboard_url="https://app.osoorganised.co.uk/admin/dashboard",
         claude_calls_used=claude_calls_used,
         claude_daily_cap=10,
     )
