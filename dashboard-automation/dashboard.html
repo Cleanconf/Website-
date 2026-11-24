@@ -490,7 +490,7 @@ function viewBusiness(){
     { label:"New paid sign-ups", src:"Stripe", kind:"abs", better:"up", fmt:int, ...d.today.newPaid },
     { label:"Revenue", src:"Stripe", kind:"abs", better:"up", fmt:gbp, ...d.today.revenue },
     { label:"Failed payments", src:"Stripe", kind:"abs", better:"down", fmt:int, ...d.today.failedPayments },
-    { label:"Website visitors", src:"Google Analytics", kind:"pct", better:"up", fmt:int, v:null },
+    { label:"Website visitors", src:"PostHog", kind:"pct", better:"up", fmt:int, v:null },
     { label:"Facebook + Instagram followers gained", src:"Meta", kind:"abs", better:"up", fmt:int, ...d.today.followersGained }
   ];
   const insights = d.insights;
@@ -532,16 +532,16 @@ function viewBusiness(){
             Delta(change("abs", f.month.prev, f.month.cur), "up", "vs LM", false)])) : `<p class="muted">${NA_VALUE}</p>`, true),
         UsageMetrics()
       ] },
-    { id:"website", title:"Website", short:"Website", status:"watch", srcs:["Google Analytics"],
-      reason:"Website tracking is moving to PostHog and is not connected yet.",
+    { id:"website", title:"Website", short:"Website", status:"watch", srcs:["PostHog"],
+      reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
       head: [
-        StatTile({label:"Total visitors since launch", src:"Google Analytics", value:null}),
-        StatTile({label:"New visitors", src:"Google Analytics", value:null}),
-        StatTile({label:"Total dwell time", src:"Google Analytics", value:null})
+        StatTile({label:"Total visitors since launch", src:"PostHog", value:null}),
+        StatTile({label:"New visitors", src:"PostHog", value:null}),
+        StatTile({label:"Total dwell time", src:"PostHog", value:null})
       ],
       detail: [
-        ListTile("Most visited pages", "Google Analytics", `<p class="muted">${NA_VALUE}</p>`),
-        ListTile("Least visited pages", "Google Analytics", `<p class="muted">${NA_VALUE}</p>`)
+        ListTile("Most visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
+        ListTile("Least visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`)
       ] }
   ];
   return { today, insights, sections };
@@ -592,9 +592,9 @@ function viewBeta(){
     { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog"],
       reason:"Payment acceptance/success rate and straight-through processing can be built from data already collected - just not wired into this page yet.",
       head: [na("Payment acceptance and success rate","Stripe"), na("Straight-through processing rate","Stripe"), na("Onboarding cycle time","PostHog")] },
-    { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["Google Analytics"],
-      reason:"Website tracking is moving to PostHog and is not connected yet.",
-      head: [na("Visitors to the sign-up page","Google Analytics"), na("Sign-up page dwell time","Google Analytics")] }
+    { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog"],
+      reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
+      head: [na("Visitors to the sign-up page","PostHog"), na("Sign-up page dwell time","PostHog")] }
   ];
   return { today, insights, sections };
 }
@@ -639,11 +639,11 @@ function viewSocial(){
    ========================================================================== */
 const VIEWS = {
   beta:{ label:"Beta", render:m => regroup(viewBeta(m), [
-    {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"}, {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}, {id:"ga", key:"Google Analytics", short:"Google Analytics", title:"Google Analytics"}]) },
+    {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"}, {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}]) },
   social:{ label:"Social media", render:viewSocial },
   business:{ label:"Business", render:m => regroup(viewBusiness(m), [
     {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}, {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"},
-    {id:"ga", key:"Google Analytics", short:"Google Analytics", title:"Google Analytics"}, {id:"meta", key:"Meta", short:"Meta", title:"Meta (Facebook and Instagram)"}]) } };
+    {id:"meta", key:"Meta", short:"Meta", title:"Meta (Facebook and Instagram)"}]) } };
 
 function Nav(m, current){
   const items = [{ id:"overview", name:"Overview", line:"What needs attention" }].concat(m.sections.map(s =>
