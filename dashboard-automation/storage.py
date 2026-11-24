@@ -20,6 +20,7 @@ SERIES_DIR = DATA_ROOT / "series"
 INSIGHTS_DIR = DATA_ROOT / "insights"
 RUNS_DIR = DATA_ROOT / "runs"
 CONFIG_DIR = DATA_ROOT / "config"
+SUMMARIES_DIR = DATA_ROOT / "summaries"
 
 STALE_LOOKBACK_DAYS = 14
 
@@ -122,6 +123,15 @@ def get_run(date_str: str) -> dict | None:
 
 def write_run(date_str: str, run: dict) -> None:
     _write_json(RUNS_DIR / f"{date_str}.json", run)
+
+
+def get_dashboard_summary(date_str: str) -> dict | None:
+    """The per-view headline metrics, actions and notes for a date - what the (future) static HTML dashboard page reads, never shown directly in Slack."""
+    return _read_json(SUMMARIES_DIR / f"{date_str}.json")
+
+
+def write_dashboard_summary(date_str: str, summary: dict) -> None:
+    _write_json(SUMMARIES_DIR / f"{date_str}.json", summary)
 
 
 def get_targets_config() -> dict:

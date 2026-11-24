@@ -6,26 +6,10 @@ from slack_post import build_failure_notice, build_slack_message
 def _base_input(**overrides) -> dict:
     defaults = dict(
         date_str="2026-11-20",
-        views=[
-            {
-                "view": "business_overview",
-                "view_label": "Business overview",
-                "headline_metrics": [
-                    {
-                        "label": "Revenue",
-                        "source": "stripe",
-                        "formatted_value": "£1,234",
-                        "comparison": {"value": 1234, "previous_value": 1000, "change": 234, "change_percent": 23.4},
-                        "status": "On target",
-                    }
-                ],
-                "actions": [{"title": "Chase failed payments", "detail": "Three cards declined yesterday."}],
-            }
-        ],
         stale_sources=[],
-        dashboard_url="https://app.osoorganised.co.uk/admin/dashboard",
         claude_calls_used=1,
         claude_daily_cap=10,
+        dashboard_url="https://example.com/dashboard.html",
     )
     defaults.update(overrides)
     return defaults
@@ -36,45 +20,26 @@ def test_includes_the_date_in_the_header():
     assert message["blocks"][0] == {"type": "header", "text": {"type": "plain_text", "text": "OSO dashboard — 2026-11-20"}}
 
 
-def test_shows_arrow_percent_and_status_word_together():
-    message = build_slack_message(**_base_input())
-    text = next(b["text"]["text"] for b in message["blocks"] if "Revenue" in json.dumps(b))
-    assert "▲" in text
-    assert "+23.4%" in text
-    assert "(On target)" in text
-
-
-def test_flat_glyph_and_not_available_yet_with_nothing_to_compare():
-    message = build_slack_message(
-        **_base_input(
-            views=[
-                {
-                    "view": "business_overview",
-                    "view_label": "Business overview",
-                    "headline_metrics": [
-                        {
-                            "label": "Revenue",
-                            "source": "stripe",
-                            "formatted_value": "£0",
-                            "comparison": {"value": None, "previous_value": None, "change": None, "change_percent": None},
-                            "status": "Watch",
-                        }
-                    ],
-                    "actions": [],
-                }
-            ]
-        )
-    )
-    blob = json.dumps(message["blocks"], ensure_ascii=False)
-    assert "▬" in blob
-    assert "not available yet" in blob
-
-
-def test_lists_prioritised_actions_under_their_view():
+def test_links_to_the_dashboard_page_when_a_url_is_given():
     message = build_slack_message(**_base_input())
     blob = json.dumps(message["blocks"])
-    assert "Chase failed payments" in blob
-    assert "Three cards declined yesterday." in blob
+    assert "example.com/dashboard.html" in blob
+    assert "Open today's dashboard" in blob
+
+
+def test_says_not_published_yet_without_a_url():
+    message = build_slack_message(**_base_input(dashboard_url=None))
+    blob = json.dumps(message["blocks"])
+    assert "not published yet" in blob
+    assert "example.com" not in blob
+
+
+def test_never_includes_any_metric_data_only_a_link():
+    """The actual figures live on the dashboard page and in data/ - never duplicated into the Slack message itself."""
+    message = build_slack_message(**_base_input())
+    blob = json.dumps(message["blocks"])
+    assert "Revenue" not in blob
+    assert "£" not in blob
 
 
 def test_calls_out_stale_sources():
@@ -89,17 +54,14 @@ def test_omits_stale_warning_when_nothing_is_stale():
     assert "Stale" not in json.dumps(message["blocks"])
 
 
-def test_includes_dashboard_link_and_run_usage():
+def test_includes_run_usage():
     message = build_slack_message(**_base_input())
-    blob = json.dumps(message["blocks"])
-    assert "app.osoorganised.co.uk/admin/dashboard" in blob
-    assert "1/10 Claude calls today" in blob
+    assert "1/10 Claude calls today" in json.dumps(message["blocks"])
 
 
 def test_plain_text_fallback():
     message = build_slack_message(**_base_input())
     assert "2026-11-20" in message["text"]
-    assert "Business overview" in message["text"]
 
 
 def test_build_failure_notice():
