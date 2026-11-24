@@ -23,10 +23,12 @@ def build_slack_message(
 ) -> dict:
     blocks: list[dict] = [{"type": "header", "text": {"type": "plain_text", "text": f"OSO dashboard — {date_str}"}}]
 
-    # No dashboard page exists yet (a standalone HTML page, never part of
-    # the web app - see README) - only show a link once dashboard_url is
-    # actually set to something real, never a placeholder that 404s.
-    link_text = f"<{dashboard_url}|Open today's dashboard>" if dashboard_url else "Dashboard page not published yet"
+    # The dashboard is a plain local file (dashboard.html), not hosted
+    # anywhere - never part of the web app, see README - so there is no
+    # real URL to link to unless dashboard_url is explicitly set (e.g. if
+    # it is ever given a private hosted link). Without one, this gives a
+    # plain instruction instead of a broken link.
+    link_text = f"<{dashboard_url}|Open today's dashboard>" if dashboard_url else "Today's dashboard is ready - pull the latest changes and open dashboard-automation/dashboard.html"
     blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": link_text}})
 
     if stale_sources:
@@ -44,7 +46,7 @@ def build_slack_message(
         {"type": "context", "elements": [{"type": "mrkdwn", "text": f"Run usage: {claude_calls_used}/{claude_daily_cap} Claude calls today"}]}
     )
 
-    text = f"OSO dashboard — {date_str}: " + (f"{dashboard_url}" if dashboard_url else "dashboard page not published yet")
+    text = f"OSO dashboard — {date_str}: " + (f"{dashboard_url}" if dashboard_url else "pull the latest changes and open dashboard-automation/dashboard.html")
 
     return {"blocks": blocks, "text": text}
 

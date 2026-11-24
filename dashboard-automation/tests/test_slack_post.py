@@ -27,10 +27,10 @@ def test_links_to_the_dashboard_page_when_a_url_is_given():
     assert "Open today's dashboard" in blob
 
 
-def test_says_not_published_yet_without_a_url():
+def test_gives_a_plain_instruction_without_a_url():
     message = build_slack_message(**_base_input(dashboard_url=None))
     blob = json.dumps(message["blocks"])
-    assert "not published yet" in blob
+    assert "dashboard-automation/dashboard.html" in blob
     assert "example.com" not in blob
 
 

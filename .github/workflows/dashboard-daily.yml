@@ -104,6 +104,6 @@ jobs:
         run: |
           git config user.name "OSO Dashboard Bot"
           git config user.email "dashboard-bot@osoorganised.co.uk"
-          git add dashboard-automation/data
+          git add dashboard-automation/data dashboard-automation/dashboard-data.js
           git diff --cached --quiet || git commit -m "Dashboard snapshot for $(TZ='Europe/London' date +%Y-%m-%d -d yesterday)"
           git push

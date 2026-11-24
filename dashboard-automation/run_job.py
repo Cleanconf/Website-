@@ -24,6 +24,7 @@ import traceback
 from date_utils import dates_between_inclusive, yesterday_london
 from formatting import format_count, format_pence
 from insights import generate_insight
+from render_dashboard import write_dashboard_data
 from rollups import METRIC_KINDS_BY_SOURCE, build_rollup, rollup_input_date_range
 from rules import flag_all_metrics, seven_day_average, status_word
 from slack_post import build_failure_notice, build_slack_message, post_to_slack
@@ -194,6 +195,7 @@ def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run:
     # Persisted for the (future) static HTML dashboard page to read - never
     # shown directly in Slack, which only gets a link to it (see slack_post.py).
     write_dashboard_summary(date_str, {"date": date_str, "views": view_sections})
+    write_dashboard_data(date_str)  # dashboard-data.js, read by dashboard.html
 
     stale_sources = [s for s in DASHBOARD_SOURCES if source_statuses[s] == "stale"]
 
