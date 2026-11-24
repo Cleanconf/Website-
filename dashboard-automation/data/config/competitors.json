@@ -1,0 +1,24 @@
+{
+  "updated": "2026-11-19",
+  "source_note": "From social-research-brief-nov-dec-2026.md. Update this file by hand when new research is done - not part of the daily automated pull.",
+  "competitors": [
+    { "name": "ZenMaid", "handle": "@get.zenmaid", "platform": "Instagram", "link": "https://www.instagram.com/get.zenmaid/", "note": "Ranked first overall - near-daily posting, real owners on camera" },
+    { "name": "Squeegee", "handle": "@squeeg.ee", "platform": "Instagram", "link": "https://www.instagram.com/squeeg.ee/", "note": "About 2 posts a week" },
+    { "name": "CleanFlow", "handle": "@getcleanflow", "platform": "Instagram", "link": "https://www.instagram.com/getcleanflow/", "note": "Silent since 23/06/2026 - thin presence" },
+    { "name": "Fresha", "handle": "@fresha", "platform": "Instagram", "link": "https://www.instagram.com/fresha/", "note": "Format reference only - beauty marketplace, not a direct rival" },
+    { "name": "CleanRoster (Lee Berry)", "handle": null, "platform": "Facebook group posts", "link": null, "note": "Closest positioning to OSO - solo cleaner pricing argument vs ZenMaid. No Facebook Page found" }
+  ],
+  "influencers": [
+    { "name": "Doctor Dust", "handle": "@doctordust.uk", "platform": "Instagram", "link": "https://www.instagram.com/doctordust.uk/", "note": "Working London cleaner - learn, then engage" },
+    { "name": "DCBN (Domestic Cleaning Business Network)", "handle": "@dcbn.uk", "platform": "Instagram", "link": "https://www.instagram.com/dcbn.uk/", "note": "Trade association - partner or engage" },
+    { "name": "Ilze Whiteman, The Cleaning Coach", "handle": null, "platform": "Instagram", "link": "https://www.instagram.com/thecleaningcoach/", "note": "Coaching for owners, mostly team-based" },
+    { "name": "Nicola Lewis", "handle": "@thisgirlcanorganise", "platform": "Instagram", "link": "https://www.instagram.com/thisgirlcanorganise/", "note": "Learn only - too large (226K)" },
+    { "name": "Cleaning with Mario", "handle": "@cleaning_with_mario", "platform": "Instagram", "link": "https://www.instagram.com/cleaning_with_mario/", "note": "Scotland - home hints and tips" },
+    { "name": "Mother_Rendall", "handle": null, "platform": "Instagram", "link": "https://www.instagram.com/mother_rendall/", "note": "Scotland - householder audience" },
+    { "name": "Amanda Hughes", "handle": "@amandahughes.uk", "platform": "Instagram", "link": "https://www.instagram.com/amandahughes.uk/", "note": "Closest in size to OSO - engage, then partner" },
+    { "name": "Louise Brogan", "handle": "@louisebrogan_", "platform": "Instagram", "link": "https://www.instagram.com/louisebrogan_/", "note": "Belfast - small business visibility coaching" },
+    { "name": "Suz Bird, Bird & Emmy", "handle": "@suzabird", "platform": "Instagram", "link": "https://www.instagram.com/suzabird/", "note": "Fills the Scotland gap - engage" },
+    { "name": "Helen Young, Solo Cleaners Support", "handle": null, "platform": "Facebook group", "link": "https://www.facebook.com/groups/solocleaners", "note": "16.8K members - no ads/spam/DMs, engage openly first" },
+    { "name": "Ann Russell", "handle": "@annrussell03", "platform": "TikTok", "link": "https://www.tiktok.com/@annrussell03", "note": "3M followers - learn (format inspiration only)" }
+  ]
+}
