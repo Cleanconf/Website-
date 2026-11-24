@@ -262,6 +262,15 @@ const TODAY_LABEL = D.meta.todayLabel;
 const YESTERDAY_LABEL = D.meta.yesterdayLabel;
 const RUN_USAGE = D.meta.runUsage;
 const NA_VALUE = "Not available yet";
+// Distinct from NA_VALUE: this is data we can genuinely measure, just not
+// yet - a week/month-to-date figure that needs every day of the period to
+// have real history before it can sum safely (see rollups.py's _sum_range).
+// It resolves itself as days pass, with no build work needed.
+const PENDING_VALUE = "Pending";
+// Distinct again: this is purely queued dev work - no permission to fix,
+// no new app instrumentation, no decision to make. Just a query not yet
+// written against data we already have.
+const NTB_VALUE = "NTB";
 
 /* number formatters */
 const gbp = n => "£" + n.toLocaleString("en-GB", { minimumFractionDigits:2, maximumFractionDigits:2 });
@@ -369,7 +378,7 @@ function TrioTile(m){
    same row shape with "Not available yet" and no comparison, never a guess. */
 function PeriodTile(m){
   return m.rows.map(r => r.cur == null
-    ? { kind:"metric", label:m.label, sub:r.lab, src:m.src, value:NA_VALUE, deltas:[] }
+    ? { kind:"metric", label:m.label, sub:r.lab, src:m.src, value:PENDING_VALUE, deltas:[] }
     : { kind:"metric", label:m.label, sub:r.lab, src:m.src, value:m.fmt(r.cur),
         deltas: r.prev == null ? [] : [{ c:change(m.kind, r.prev, r.cur, m.fmt), better:m.better, when:r.cmp, verdict:true }] });
 }
@@ -473,10 +482,10 @@ const Footer = () => `<footer class="footer"><span>Run usage: ${RUN_USAGE.claude
    ========================================================================== */
 function UsageMetrics(){
   return [
-    ListTile("Time of day (share of usage)", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`),
-    StatTile({label:"Total hours in app, this week", src:"PostHog webapp", value:null}),
-    ListTile("Device", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`),
-    ListTile("Platform", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`)
+    ListTile("Time of day (share of usage)", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`),
+    StatTile({label:"Total hours in app, this week", src:"PostHog webapp", value:NTB_VALUE}),
+    ListTile("Device", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`),
+    ListTile("Platform", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`)
   ];
 }
 
@@ -510,7 +519,7 @@ function viewBusiness(){
           {kind:"pct", better:"up", ...d.paying.vsLW, when:"vs LW", verdict:true},
           {kind:"pct", better:"up", ...d.paying.vsLM, when:"vs LM", verdict:true}]}),
         ListTile("Paying users, last 30 days", "Stripe",
-            d.paying.trend30d && d.paying.trend30d.values.length > 1 ? TrendChart(d.paying.trend30d.labels, d.paying.trend30d.values, "Line chart of paying users by day") : `<p class="muted">Not enough history yet - needs at least two days of data.</p>`, "span2")] },
+            d.paying.trend30d && d.paying.trend30d.values.length > 1 ? TrendChart(d.paying.trend30d.labels, d.paying.trend30d.values, "Line chart of paying users by day") : `<p class="muted">${PENDING_VALUE} - needs at least two days of data.</p>`, "span2")] },
     { id:"retention", title:"Churn and failed payments", short:"Churn", status:d.retention.status, srcs:["Stripe","PostHog webapp"],
       reason:d.retention.reason,
       head: [
@@ -573,16 +582,17 @@ function viewBeta(){
   ];
   const insights = d.insights;
   const na = (label, src) => StatTile({label, src, value:null});
+  const ntb = (label, src) => StatTile({label, src, value:NTB_VALUE});
   const sections = [
     { id:"health", title:"Beta health at a glance", short:"Health", status:"watch", srcs:["PostHog webapp"],
       reason:"Feature coverage is measured below. Set-up time and drop-off still need new PostHog queries.",
       head: [
         ListTile("Feature coverage (share of active users who used each, yesterday)", "PostHog webapp",
           d.featureCoverage && d.featureCoverage.length ? BarList(d.featureCoverage.map(f => ({label:f.label, value:f.value, text:pct(f.value)})), 100) : `<p class="muted">${NA_VALUE} - no active users yesterday to measure.</p>`),
-        na("Set-up is quick (median time)","PostHog webapp"), na("Users who don't drop off","PostHog webapp")] },
+        ntb("Set-up is quick (median time)","PostHog webapp"), ntb("Users who don't drop off","PostHog webapp")] },
     { id:"usability", title:"Usability", short:"Usability", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - Client Effort Score needs an in-app survey (no source yet).",
-      head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog webapp"), na("Speed to set up (median)","PostHog webapp")] },
+      head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog webapp"), ntb("Speed to set up (median)","PostHog webapp")] },
     { id:"funnel", title:"Meeting Booking Conversion Rate (task funnel)", short:"Task funnel", status:"watch", srcs:["PostHog webapp"],
       reason:"Needs the app's own database (Firestore), not PostHog - linking one specific task through to one specific payment isn't something PostHog's anonymous events can do.",
       head: [StatTile({label:"Tasks ticked through to paid", src:"PostHog webapp", value:"TBD", note:"Needs Firestore read access - a bigger decision, not just a new query"})] },
@@ -594,14 +604,14 @@ function viewBeta(){
     { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog webapp"],
       reason:"Payment recording is measured below. Dashboard sessions per user, per week still needs a new query.",
       head: [
-        na("Dashboard sessions per user, per week","PostHog webapp"),
+        ntb("Dashboard sessions per user, per week","PostHog webapp"),
         StatTile({label:"Payment recording (paid ticks of tasks created, yesterday)", src:"PostHog webapp",
           value: d.paymentRecordingRate == null ? null : pct(d.paymentRecordingRate),
           note: d.paymentRecordingCounts.tasksCreated == null ? null : `${int(d.paymentRecordingCounts.paidTicks || 0)} of ${int(d.paymentRecordingCounts.tasksCreated)} tasks created`})] },
     { id:"overall", title:"Overall", short:"Overall", status:"watch", srcs:["PostHog webapp"],
       reason:"Average session length is measured below. Churn and customer support messages still need a source.",
       head: [
-        na("Churn: never used after sign-up","PostHog webapp"),
+        ntb("Churn: never used after sign-up","PostHog webapp"),
         StatTile({label:"Average session (dwell time), yesterday", src:"PostHog webapp", value:d.avgSessionSeconds == null ? null : dur(d.avgSessionSeconds)}),
         StatTile({label:"Customer support messages, this week", src:"PostHog webapp", value:"Placeholder", note:"Approach not finalized yet - WhatsApp conversations exported to a CSV and imported into PostHog. Shape of that import still to be worked out."})] },
     { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog webapp"],
@@ -609,7 +619,7 @@ function viewBeta(){
       head: [
         StatTile({label:"Payment acceptance and success rate, yesterday", src:"Stripe", value:d.technical.acceptanceRate == null ? null : pct(d.technical.acceptanceRate)}),
         StatTile({label:"Straight-through processing rate, yesterday", src:"Stripe", value:d.technical.straightThroughRate == null ? null : pct(d.technical.straightThroughRate)}),
-        na("Onboarding cycle time","PostHog webapp")] },
+        ntb("Onboarding cycle time","PostHog webapp")] },
     { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog website"],
       reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
       head: [na("Visitors to the sign-up page","PostHog website"), na("Sign-up page dwell time","PostHog website")] }
@@ -647,9 +657,23 @@ function viewSocial(){
       ListTile(name + " best post, yesterday", "Meta", bestPostBlock(name, bestPost), true)
     ]
   });
+  const competitorRows = (list) => list.length
+    ? Table(["Name", "Platform", "Notes"], list.map(c => [
+        `<b>${c.link ? `<a href="${c.link}" target="_blank" rel="noopener">${c.name} ↗</a>` : c.name}</b>${c.handle ? `<span class="m-note">${c.handle}</span>` : ""}`,
+        c.platform || "",
+        c.note || ""
+      ]))
+    : `<p class="muted">${NA_VALUE}</p>`;
+  const competitors = d.competitors || { competitors: [], influencers: [], updated: null };
   const sections = [
     platformSection("facebook", "Facebook", d.facebook.followers, d.facebook.bestPost, d.facebook.engagementRate, d.facebook.status, d.facebook.reason),
-    platformSection("instagram", "Instagram", d.instagram.followers, d.instagram.bestPost, d.instagram.engagementRate, d.instagram.status, d.instagram.reason)
+    platformSection("instagram", "Instagram", d.instagram.followers, d.instagram.bestPost, d.instagram.engagementRate, d.instagram.status, d.instagram.reason),
+    { id:"competitors", title:"Competitors & creators", short:"Competitors", status:"watch", srcs:["Research"],
+      reason:(competitors.updated ? `Hand-researched, last updated ${competitors.updated} - ` : "") + "not pulled automatically. Instagram's Business Discovery API would do this live, but it needs Meta App Review first (see the social research brief).",
+      head: [
+        ListTile("Competitors", "Research", competitorRows(competitors.competitors), "span2"),
+        ListTile("Influencers & creators", "Research", competitorRows(competitors.influencers), "span2")
+      ] }
   ];
   return { today, insights, sections };
 }

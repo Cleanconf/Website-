@@ -1,8 +1,13 @@
+from pathlib import Path
+from unittest.mock import patch
+
+import render_dashboard
 from render_dashboard import (
     _empty_week_month,
     _format_weekday_date,
     _map_insights,
     _pence_to_pounds,
+    _read_competitors,
     _with_reason,
 )
 
@@ -41,3 +46,18 @@ def test_map_insights_maps_title_and_detail_into_one_text():
     assert len(mapped) == 1
     assert mapped[0]["t"] == "Chase failed payments. One card declined yesterday."
     assert mapped[0]["p"] == "Medium"
+
+
+def test_read_competitors_missing_file_returns_empty_lists(tmp_path):
+    with patch.object(render_dashboard, "DASHBOARD_HTML_DIR", tmp_path):
+        assert _read_competitors() == {"competitors": [], "influencers": [], "updated": None}
+
+
+def test_read_competitors_reads_real_reference_file():
+    # The real data/config/competitors.json is hand-maintained reference data
+    # (see social-research-brief-nov-dec-2026.md) - just check the shape, not
+    # the exact content, so this doesn't break every time it's updated.
+    result = _read_competitors()
+    assert isinstance(result["competitors"], list) and len(result["competitors"]) > 0
+    assert isinstance(result["influencers"], list) and len(result["influencers"]) > 0
+    assert all({"name", "platform", "link"} <= entry.keys() for entry in result["competitors"])

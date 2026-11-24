@@ -271,6 +271,7 @@ def _build_social(date_str: str) -> dict:
             "pageFollowersGained": _gained(page_gained),
         },
         "insights": [],
+        "competitors": _read_competitors(),
         "facebook": {
             "status": "watch" if meta_stale else "watch",
             "reason": "Facebook best post, engagement rate and reach are not available with the current Meta permissions.",
@@ -286,6 +287,16 @@ def _build_social(date_str: str) -> dict:
             "engagementRate": ig_engagement_rate,
         },
     }
+
+
+def _read_competitors() -> dict:
+    """Hand-maintained reference list (competitors.json) - not part of the daily pull, since Instagram's Business Discovery API is blocked pending Meta App Review (see social-research-brief-nov-dec-2026.md). Updated manually whenever new research is done."""
+    path = DASHBOARD_HTML_DIR / "data" / "config" / "competitors.json"
+    if not path.exists():
+        return {"competitors": [], "influencers": [], "updated": None}
+    with path.open() as f:
+        data = json.load(f)
+    return {"competitors": data.get("competitors", []), "influencers": data.get("influencers", []), "updated": data.get("updated")}
 
 
 def _read_rollup(source: str, date_str: str) -> dict | None:
