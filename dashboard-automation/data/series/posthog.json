@@ -4,8 +4,13 @@
       "month": "2026-11",
       "values": {
         "active_users": 0,
+        "clients_added": 0,
         "cta_clicks": 0,
-        "new_trial_sign_ups": 0
+        "lina_reminders_sent": 0,
+        "new_trial_sign_ups": 0,
+        "paid_ticks": 0,
+        "tasks_created": 0,
+        "tasks_ticked_done": 0
       }
     }
   ],

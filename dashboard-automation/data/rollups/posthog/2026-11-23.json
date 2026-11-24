@@ -7,13 +7,43 @@
       "previous_value": null,
       "value": 0
     },
+    "clients_added": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
     "cta_clicks": {
       "change": null,
       "change_percent": null,
       "previous_value": null,
       "value": null
     },
+    "lina_reminders_sent": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
     "new_trial_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "paid_ticks": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "tasks_created": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "tasks_ticked_done": {
       "change": null,
       "change_percent": null,
       "previous_value": null,
@@ -36,6 +66,20 @@
         "value": 0
       }
     },
+    "clients_added": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
     "cta_clicks": {
       "vs_last_week": {
         "change": null,
@@ -50,7 +94,63 @@
         "value": 0
       }
     },
+    "lina_reminders_sent": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
     "new_trial_sign_ups": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
+    "paid_ticks": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
+    "tasks_created": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
+    "tasks_ticked_done": {
       "vs_last_week": {
         "change": null,
         "change_percent": null,
@@ -72,13 +172,43 @@
       "previous_value": null,
       "value": 0
     },
+    "clients_added": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
     "cta_clicks": {
       "change": null,
       "change_percent": null,
       "previous_value": null,
       "value": 0
     },
+    "lina_reminders_sent": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
     "new_trial_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "paid_ticks": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "tasks_created": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "tasks_ticked_done": {
       "change": null,
       "change_percent": null,
       "previous_value": null,

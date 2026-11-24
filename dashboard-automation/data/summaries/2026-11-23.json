@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-23",
+  "views": [
+    {
+      "actions": [],
+      "headline_metrics": [
+        {
+          "comparison": {
+            "change": null,
+            "change_percent": null,
+            "previous_value": null,
+            "value": 0
+          },
+          "formatted_value": "\u00a30.00",
+          "label": "Revenue",
+          "source": "stripe",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": null,
+            "change_percent": null,
+            "previous_value": null,
+            "value": 1
+          },
+          "formatted_value": "1",
+          "label": "New paid sign-ups",
+          "source": "stripe",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": null,
+            "change_percent": null,
+            "previous_value": null,
+            "value": 0
+          },
+          "formatted_value": "0",
+          "label": "New trial sign-ups",
+          "source": "posthog",
+          "status": "Watch"
+        }
+      ],
+      "notes": [],
+      "view": "business_overview",
+      "view_label": "Business overview"
+    },
+    {
+      "actions": [],
+      "headline_metrics": [
+        {
+          "comparison": {
+            "change": null,
+            "change_percent": null,
+            "previous_value": null,
+            "value": 15
+          },
+          "formatted_value": "15",
+          "label": "Facebook followers",
+          "source": "meta",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": null,
+            "change_percent": null,
+            "previous_value": null,
+            "value": 23
+          },
+          "formatted_value": "23",
+          "label": "Instagram followers",
+          "source": "meta",
+          "status": "Watch"
+        }
+      ],
+      "notes": [
+        "Best Instagram post: 1 like, 0 comments (4.3% engagement) \u2014 https://www.instagram.com/p/DgFioxXFVjG/",
+        "Not available yet: Facebook best post, Facebook reach, Instagram reach \u2014 Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.; Facebook Page reach/impressions: the Insights API call did not return a valid metric - needs further investigation.; Instagram reach needs the instagram_manage_insights permission added to this token."
+      ],
+      "view": "social_media",
+      "view_label": "Social media"
+    }
+  ]
+}

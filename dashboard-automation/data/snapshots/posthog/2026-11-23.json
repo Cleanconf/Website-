@@ -3,9 +3,22 @@
   "error": null,
   "raw": {
     "active_users": 0,
+    "avg_session_seconds": null,
+    "clients_added": 0,
     "cta_clicks": 0,
+    "feature_coverage_users": {
+      "Calendar": 0,
+      "Contacts": 0,
+      "Dashboard": 0,
+      "Payments": 0,
+      "Services": 0
+    },
+    "lina_reminders_sent": 0,
     "new_trial_sign_ups": 0,
-    "sign_ups_by_channel": {}
+    "paid_ticks": 0,
+    "sign_ups_by_channel": {},
+    "tasks_created": 0,
+    "tasks_ticked_done": 0
   },
   "source": "posthog",
   "status": "ok"
