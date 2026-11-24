@@ -477,15 +477,19 @@ const Footer = () => `<footer class="footer"><span>Run usage: ${RUN_USAGE.claude
 /* ==========================================================================
    SHARED BLOCK: usage metrics (used in Business overview and Beta).
    PostHog captures time-of-day, device and platform automatically on every
-   event - no new instrumentation needed - but the query for them is not
-   written yet, so these show "Not available yet" rather than a guess.
+   event - no new instrumentation needed. Total hours in app still needs
+   its own query, so that one alone stays NTB.
    ========================================================================== */
-function UsageMetrics(){
+function UsageMetrics(usage){
+  usage = usage || {};
+  const shareList = (rows) => rows && rows.length
+    ? BarList(rows.map(r => ({label:r.label, value:r.value, text:pct(r.value)})), 100)
+    : `<p class="muted">${NA_VALUE} - no events to measure yesterday.</p>`;
   return [
-    ListTile("Time of day (share of usage)", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`),
+    ListTile("Time of day (share of usage)", "PostHog webapp", shareList(usage.hourOfDay)),
     StatTile({label:"Total hours in app, this week", src:"PostHog webapp", value:NTB_VALUE}),
-    ListTile("Device", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`),
-    ListTile("Platform", "PostHog webapp", `<p class="muted">${NTB_VALUE}</p>`)
+    ListTile("Device", "PostHog webapp", shareList(usage.device)),
+    ListTile("Platform", "PostHog webapp", shareList(usage.platform))
   ];
 }
 
@@ -540,7 +544,7 @@ function viewBusiness(){
           d.marketing.followers.map(f => [f.channel, `<b>${int(f.total)}</b>`,
             Delta(change("abs", f.week.prev, f.week.cur), "up", "vs LW", false),
             Delta(change("abs", f.month.prev, f.month.cur), "up", "vs LM", false)])) : `<p class="muted">${NA_VALUE}</p>`, true),
-        UsageMetrics()
+        UsageMetrics(d.marketing.usage)
       ] },
     { id:"website", title:"Website", short:"Website", status:"watch", srcs:["PostHog website"],
       reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
@@ -602,9 +606,9 @@ function viewBeta(){
         StatTile({label:"Lina reminders confirmed as sent, yesterday", src:"PostHog webapp", value:d.linaRemindersSentYesterday == null ? null : String(d.linaRemindersSentYesterday)}),
         StatTile({label:"Paid within 7 days of a sent reminder", src:"PostHog webapp", value:"TBD", note:"Needs Firestore read access - a bigger decision, not just a new query"})] },
     { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog webapp"],
-      reason:"Payment recording is measured below. Dashboard sessions per user, per week still needs a new query.",
+      reason:"Payment recording and dashboard sessions per user are both measured below.",
       head: [
-        ntb("Dashboard sessions per user, per week","PostHog webapp"),
+        StatTile({label:"Dashboard sessions per user, this week to date", src:"PostHog webapp", value:d.sessionsPerUserWeekToDate == null ? null : String(d.sessionsPerUserWeekToDate)}),
         StatTile({label:"Payment recording (paid ticks of tasks created, yesterday)", src:"PostHog webapp",
           value: d.paymentRecordingRate == null ? null : pct(d.paymentRecordingRate),
           note: d.paymentRecordingCounts.tasksCreated == null ? null : `${int(d.paymentRecordingCounts.paidTicks || 0)} of ${int(d.paymentRecordingCounts.tasksCreated)} tasks created`})] },

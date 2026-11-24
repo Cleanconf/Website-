@@ -12,7 +12,7 @@ import os
 
 import requests
 
-from date_utils import london_day_range_utc
+from date_utils import london_day_range_utc, london_week_start
 
 POSTHOG_API_HOST = "https://eu.posthog.com"
 
@@ -73,6 +73,29 @@ def _average_session_seconds(in_window: str) -> float | None:
     return rows[0][0] if rows and rows[0][0] is not None else None
 
 
+def _count_breakdown(select_expr: str, in_window: str) -> dict:
+    """Generic `group by` breakdown: {value: count}, dropping a null grouping key rather than guessing a label for it. `is not None` (not truthiness) so a legitimate falsy value like hour 0 survives."""
+    rows = _run_hogql_query(f"select {select_expr}, count() from events where {in_window} group by {select_expr}")
+    return {label: count for label, count in rows if label is not None}
+
+
+def _sessions_per_user_week_to_date(date_str: str) -> float | None:
+    """Distinct sessions / distinct active users from this London week's Monday through the given day - a true week-to-date ratio, not a sum of daily figures (which would double-count a person active on multiple days)."""
+    week_start_utc, _ = london_day_range_utc(london_week_start(date_str))
+    _, week_end_utc_exclusive = london_day_range_utc(date_str)
+    window = (
+        f"properties.environment = 'production' "
+        f"and timestamp >= '{_to_hogql_timestamp(week_start_utc)}' and timestamp < '{_to_hogql_timestamp(week_end_utc_exclusive)}'"
+    )
+    rows = _run_hogql_query(
+        f"select count(distinct properties.$session_id), count(distinct person_id) from events where {window}"
+    )
+    if not rows:
+        return None
+    sessions, users = rows[0]
+    return round(sessions / users, 1) if users else None
+
+
 def fetch_posthog_daily_raw(date_str: str) -> dict:
     start_utc, end_utc_exclusive = london_day_range_utc(date_str)
     start = _to_hogql_timestamp(start_utc)
@@ -113,4 +136,10 @@ def fetch_posthog_daily_raw(date_str: str) -> dict:
         # "Lina" is deliberately absent - it has no route of its own.
         "feature_coverage_users": feature_coverage_users,
         "avg_session_seconds": _average_session_seconds(in_window),
+        # Usage metrics - all three properties are captured automatically by
+        # PostHog's own autocapture, no new instrumentation needed.
+        "hour_of_day_counts": _count_breakdown("toHour(toTimeZone(timestamp, 'Europe/London'))", in_window),
+        "device_type_counts": _count_breakdown("properties.$device_type", in_window),
+        "os_counts": _count_breakdown("properties.$os", in_window),
+        "sessions_per_active_user_week_to_date": _sessions_per_user_week_to_date(date_str),
     }
