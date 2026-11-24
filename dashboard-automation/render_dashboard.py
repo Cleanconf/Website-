@@ -178,6 +178,58 @@ def _build_business(date_str: str) -> dict:
     }
 
 
+def _build_beta(date_str: str) -> dict:
+    stripe_range = get_raw_by_date_range("stripe", dates_between_inclusive_safe(date_str))
+    posthog_range = get_raw_by_date_range("posthog", dates_between_inclusive_safe(date_str))
+    summary = get_dashboard_summary(date_str) or {}
+    beta_insight = next((v for v in summary.get("views", []) if v["view"] == "beta"), None)
+
+    today_posthog = posthog_range.get(date_str) or {}
+    today_stripe = stripe_range.get(date_str) or {}
+
+    active_users = today_posthog.get("active_users")
+    feature_coverage_users = today_posthog.get("feature_coverage_users") or {}
+    feature_coverage = None
+    if active_users:
+        feature_coverage = [
+            {"label": feature, "value": round(count / active_users * 100, 1)}
+            for feature, count in feature_coverage_users.items()
+        ]
+
+    tasks_created = today_posthog.get("tasks_created")
+    paid_ticks = today_posthog.get("paid_ticks")
+    payment_recording_rate = round(paid_ticks / tasks_created * 100, 1) if tasks_created else None
+
+    payments_attempted = today_stripe.get("payments_attempted")
+    payments_succeeded = today_stripe.get("payments_succeeded")
+    acceptance_rate = round(payments_succeeded / payments_attempted * 100, 1) if payments_attempted else None
+
+    straight_through = today_stripe.get("straight_through_payments")
+    recovered = today_stripe.get("recovered_payments")
+    straight_through_total = (straight_through or 0) + (recovered or 0)
+    straight_through_rate = round(straight_through / straight_through_total * 100, 1) if straight_through_total else None
+
+    return {
+        "today": {
+            "activeUsers": _comparison_pair(posthog_range, date_str, "active_users"),
+            "tasksTickedDone": _comparison_pair(posthog_range, date_str, "tasks_ticked_done"),
+            "paidTicks": _comparison_pair(posthog_range, date_str, "paid_ticks"),
+            "clientsAdded": _comparison_pair(posthog_range, date_str, "clients_added"),
+            "linaRemindersSent": _comparison_pair(posthog_range, date_str, "lina_reminders_sent"),
+        },
+        "insights": _map_insights(beta_insight),
+        "featureCoverage": feature_coverage,
+        "avgSessionSeconds": today_posthog.get("avg_session_seconds"),
+        "paymentRecordingRate": payment_recording_rate,
+        "paymentRecordingCounts": {"paidTicks": paid_ticks, "tasksCreated": tasks_created},
+        "linaRemindersSentYesterday": today_posthog.get("lina_reminders_sent"),
+        "technical": {
+            "acceptanceRate": acceptance_rate,
+            "straightThroughRate": straight_through_rate,
+        },
+    }
+
+
 def _with_reason(section: dict) -> dict:
     section["reason"] = _REASON_BY_STATUS[section["status"]]
     return section
@@ -262,7 +314,7 @@ def build_dashboard_data(date_str: str) -> dict:
         },
         "business": _build_business(date_str),
         "social": _build_social(date_str),
-        "beta": None,
+        "beta": _build_beta(date_str),
     }
 
 

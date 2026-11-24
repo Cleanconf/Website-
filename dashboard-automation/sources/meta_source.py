@@ -82,7 +82,11 @@ def _fetch_ig_media_for_date(date_str: str) -> list[dict]:
 
     media_in_range = []
     url = f"{GRAPH_API}/{ig_id}/media"
-    params = {"fields": "id,timestamp,like_count,comments_count,permalink", "limit": 25, "access_token": token}
+    params = {
+        "fields": "id,timestamp,like_count,comments_count,permalink,media_type,media_url,thumbnail_url",
+        "limit": 25,
+        "access_token": token,
+    }
 
     for _ in range(10):  # bounded - a single day's posts are never more than a handful of pages away
         body = _get(url, params)
@@ -112,7 +116,14 @@ def pick_best_ig_post(media_today: list[dict], followers: int) -> tuple[dict | N
         return None, None
     best = max(media_today, key=lambda m: m["like_count"] + m["comments_count"])
     engagement = best["like_count"] + best["comments_count"]
-    best_post = {"permalink": best["permalink"], "likes": best["like_count"], "comments": best["comments_count"]}
+    # VIDEO posts don't carry a usable media_url (it's the raw video file) - thumbnail_url is the still image for those.
+    image_url = best.get("thumbnail_url") if best.get("media_type") == "VIDEO" else best.get("media_url")
+    best_post = {
+        "permalink": best["permalink"],
+        "likes": best["like_count"],
+        "comments": best["comments_count"],
+        "image_url": image_url,
+    }
     engagement_rate = (engagement / followers) if followers else None
     return best_post, engagement_rate
 

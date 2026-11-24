@@ -40,6 +40,11 @@ POSTHOG_METRIC_KINDS = {
     "new_trial_sign_ups": "sum",
     "cta_clicks": "sum",
     "active_users": "last",
+    "tasks_ticked_done": "sum",
+    "paid_ticks": "sum",
+    "clients_added": "sum",
+    "lina_reminders_sent": "sum",
+    "tasks_created": "sum",
 }
 
 # ig_best_post / ig_engagement_rate / page_reach / ig_reach etc. aren't

@@ -267,6 +267,7 @@ const NA_VALUE = "Not available yet";
 const gbp = n => "£" + n.toLocaleString("en-GB", { minimumFractionDigits:2, maximumFractionDigits:2 });
 const int = n => n.toLocaleString("en-GB");
 const pct = n => (Math.round(n*10)/10) + "%";
+const dur = s => Math.floor(s/60) + "m " + Math.round(s%60) + "s";
 const ms  = n => n + " ms";
 const sec = s => s < 60 ? s + " s" : Math.floor(s/60) + " m " + String(s%60).padStart(2,"0") + " s";
 const mins = m => m < 60 ? m + " m" : Math.floor(m/60) + " h " + String(m%60).padStart(2,"0") + " m";
@@ -561,19 +562,24 @@ function viewBusiness(){
    and side menu already in place for when they are built.
    ========================================================================== */
 function viewBeta(){
+  const d = D.beta;
+  if (!d) return { today:[], insights:[], sections:[] };
   const today = [
-    { label:"Active beta users", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Tasks ticked as done", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Paid ticks", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Clients added", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Lina reminders confirmed sent", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null }
+    { label:"Active beta users", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.activeUsers },
+    { label:"Tasks ticked as done", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.tasksTickedDone },
+    { label:"Paid ticks", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.paidTicks },
+    { label:"Clients added", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.clientsAdded },
+    { label:"Lina reminders confirmed sent", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.linaRemindersSent }
   ];
-  const insights = [];
+  const insights = d.insights;
   const na = (label, src) => StatTile({label, src, value:null});
   const sections = [
     { id:"health", title:"Beta health at a glance", short:"Health", status:"watch", srcs:["PostHog webapp"],
-      reason:"Not measured yet - needs new PostHog event queries.",
-      head: [na("Feature coverage","PostHog webapp"), na("Set-up is quick (median time)","PostHog webapp"), na("Users who don't drop off","PostHog webapp")] },
+      reason:"Feature coverage is measured below. Set-up time and drop-off still need new PostHog queries.",
+      head: [
+        ListTile("Feature coverage (share of active users who used each, yesterday)", "PostHog webapp",
+          d.featureCoverage && d.featureCoverage.length ? BarList(d.featureCoverage.map(f => ({label:f.label, value:f.value, text:pct(f.value)})), 100) : `<p class="muted">${NA_VALUE} - no active users yesterday to measure.</p>`),
+        na("Set-up is quick (median time)","PostHog webapp"), na("Users who don't drop off","PostHog webapp")] },
     { id:"usability", title:"Usability", short:"Usability", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - Client Effort Score needs an in-app survey (no source yet).",
       head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog webapp"), na("Speed to set up (median)","PostHog webapp")] },
@@ -581,17 +587,29 @@ function viewBeta(){
       reason:"Not measured yet - needs a new PostHog query grouping tasks by outcome.",
       head: [na("Tasks ticked through to paid","PostHog webapp")] },
     { id:"recovery", title:"Payment recovery rate", short:"Recovery", status:"watch", srcs:["PostHog webapp"],
-      reason:"Not measured yet - needs a new PostHog query on payment_reminder_sent.",
-      head: [na("Lina reminders confirmed as sent","PostHog webapp"), na("Paid within 7 days of a sent reminder","PostHog webapp")] },
+      reason:"Lina reminders sent is measured below. Paid-within-7-days still needs a new query linking reminders to payments.",
+      head: [
+        StatTile({label:"Lina reminders confirmed as sent, yesterday", src:"PostHog webapp", value:d.linaRemindersSentYesterday == null ? null : String(d.linaRemindersSentYesterday)}),
+        na("Paid within 7 days of a sent reminder","PostHog webapp")] },
     { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog webapp"],
-      reason:"Not measured yet - needs new PostHog event queries.",
-      head: [na("Dashboard sessions per user, per week","PostHog webapp"), na("Payment recording","PostHog webapp")] },
+      reason:"Payment recording is measured below. Dashboard sessions per user, per week still needs a new query.",
+      head: [
+        na("Dashboard sessions per user, per week","PostHog webapp"),
+        StatTile({label:"Payment recording (paid ticks of tasks created, yesterday)", src:"PostHog webapp",
+          value: d.paymentRecordingRate == null ? null : pct(d.paymentRecordingRate),
+          note: d.paymentRecordingCounts.tasksCreated == null ? null : `${int(d.paymentRecordingCounts.paidTicks || 0)} of ${int(d.paymentRecordingCounts.tasksCreated)} tasks created`})] },
     { id:"overall", title:"Overall", short:"Overall", status:"watch", srcs:["PostHog webapp"],
-      reason:"Not measured yet - needs new PostHog event queries. Accessibility and customer support messages have no source at all yet.",
-      head: [na("Churn: never used after sign-up","PostHog webapp"), na("Average session (dwell time)","PostHog webapp"), na("Customer support messages, this week","PostHog webapp")] },
+      reason:"Average session length is measured below. Churn and customer support messages still need a source.",
+      head: [
+        na("Churn: never used after sign-up","PostHog webapp"),
+        StatTile({label:"Average session (dwell time), yesterday", src:"PostHog webapp", value:d.avgSessionSeconds == null ? null : dur(d.avgSessionSeconds)}),
+        na("Customer support messages, this week","PostHog webapp")] },
     { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog webapp"],
-      reason:"Payment acceptance/success rate and straight-through processing can be built from data already collected - just not wired into this page yet.",
-      head: [na("Payment acceptance and success rate","Stripe"), na("Straight-through processing rate","Stripe"), na("Onboarding cycle time","PostHog webapp")] },
+      reason:"Payment acceptance/success rate and straight-through processing are measured below from Stripe. Onboarding cycle time still needs a new PostHog query.",
+      head: [
+        StatTile({label:"Payment acceptance and success rate, yesterday", src:"Stripe", value:d.technical.acceptanceRate == null ? null : pct(d.technical.acceptanceRate)}),
+        StatTile({label:"Straight-through processing rate, yesterday", src:"Stripe", value:d.technical.straightThroughRate == null ? null : pct(d.technical.straightThroughRate)}),
+        na("Onboarding cycle time","PostHog webapp")] },
     { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog website"],
       reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
       head: [na("Visitors to the sign-up page","PostHog website"), na("Sign-up page dwell time","PostHog website")] }
@@ -613,18 +631,20 @@ function viewSocial(){
   const insights = d.insights;
   const na = (label) => `<p class="muted">${NA_VALUE} - ${label}</p>`;
   const naStat = (label, note) => StatTile({label, src:"Meta", value:null, note});
+  const bestPostBlock = (name, bestPost) => bestPost
+    ? `<div class="best-post">${bestPost.image_url ? `<img src="${bestPost.image_url}" alt="" style="max-width:100%;border-radius:8px;display:block;margin-bottom:8px">` : ""}
+        <a href="${bestPost.permalink}" target="_blank" rel="noopener">Open post on ${name} ↗</a></div>`
+    : `<p class="muted">No post yesterday.</p>`;
   const platformSection = (id, name, followers, bestPost, engagementRate, status, reason) => ({
     id, title:name, short:name, status, srcs:["Meta"], reason,
     head: [
       StatTile({label:name + " followers now", src:"Meta", value:followers.now == null ? null : String(followers.now), deltas:[
         {kind:"abs", better:"up", ...followers.vsYesterday, when:"vs day before", verdict:true},
         {kind:"abs", better:"up", ...followers.vsLastWeek, when:"vs same day last week", verdict:false}]}),
-      bestPost ? StatTile({label:name + " best post, yesterday", src:"Meta", value:`${bestPost.likes} likes, ${bestPost.comments} comments`, note:bestPost.permalink}) : naStat(name + " best post, yesterday", name === "Facebook" ? "Needs the pages_read_engagement permission working for this token" : "No post yesterday"),
-      engagementRate == null ? naStat(name + " engagement rate", name === "Facebook" ? "Needs the pages_read_engagement permission" : "No post to measure yesterday") : StatTile({label:name + " engagement rate (best post)", src:"Meta", value:pct(engagementRate * 100)}),
       naStat(name + " reach, yesterday", "Needs the instagram_manage_insights permission (Instagram) or a working Page Insights call (Facebook)")
     ],
     detail: [
-      ListTile(name + ": benchmark against competitors and influencers", "Meta", na("not built yet, needs a decision on data source (manual entry or a paid tool) - see the step 0 audit"), true)
+      ListTile(name + " best post, yesterday", "Meta", bestPostBlock(name, bestPost), true)
     ]
   });
   const sections = [
