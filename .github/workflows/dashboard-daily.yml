@@ -1,14 +1,19 @@
 name: Daily dashboard
 
 # GitHub Actions cron is always UTC, with no timezone option, so this
-# triggers twice (05:00 and 06:00 UTC) to cover both BST and GMT, and the
-# "Check it is 06:00 in London" step below skips the wrong one of the two
-# on any given day - the actual 06:00 Europe/London run always proceeds,
-# the other is a cheap no-op.
+# triggers twice (around 05:00 and 06:00 UTC) to cover both BST and GMT,
+# and the "Check it is 06:00 in London" step below skips the wrong one of
+# the two on any given day - the actual 06:00 Europe/London run always
+# proceeds, the other is a cheap no-op.
+#
+# Deliberately NOT exactly on the hour: GitHub's own docs flag the top of
+# the hour as the highest-load, most delay-prone time for scheduled runs
+# to fire - see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule.
+# (The gate step only checks the hour, not the minute, so this is safe.)
 on:
   schedule:
-    - cron: "0 5 * * *"
-    - cron: "0 6 * * *"
+    - cron: "7 5 * * *"
+    - cron: "7 6 * * *"
   workflow_dispatch:
     inputs:
       date:
