@@ -120,12 +120,17 @@ def _build_business(date_str: str) -> dict:
     churn_reasons_raw = (stripe_range.get(date_str) or {}).get("churn_reasons") or {}
     churn_reasons = [{"label": k.replace("_", " ").capitalize(), "value": v} for k, v in churn_reasons_raw.items()] or None
 
-    series = _read_series("stripe")
-    trend12mo = None
-    if series and series.get("months"):
-        trend12mo = {
-            "labels": [m["month"][5:7] for m in series["months"]],
-            "values": [round(m["values"].get("total_paying_users", 0)) for m in series["months"]],
+    # Daily, not monthly: a 12-month chart needs 2 calendar months before it can draw
+    # a line at all. Built from the same daily snapshots as everything else, this
+    # shows a line from the second day of real data onward, and at OSO's current
+    # size day-to-day movement is more informative than a monthly average anyway.
+    trend_days = [(d, (stripe_range.get(d) or {}).get("total_paying_users")) for d in dates_between_inclusive_safe(date_str)]
+    trend_days = [(d, v) for d, v in trend_days if v is not None]
+    trend30d = None
+    if len(trend_days) > 1:
+        trend30d = {
+            "labels": [d[8:10] for d, _ in trend_days],
+            "values": [round(v) for _, v in trend_days],
         }
 
     meta_followers_rows = None
@@ -162,7 +167,7 @@ def _build_business(date_str: str) -> dict:
             "now": now_paying,
             "vsLW": {"from": lw_paying, "to": now_paying},
             "vsLM": {"from": lm_paying, "to": now_paying},
-            "trend12mo": trend12mo,
+            "trend30d": trend30d,
         }),
         "retention": _with_reason({
             "status": _section_status(stripe_range, date_str, "churned_subscriptions"),
@@ -285,14 +290,6 @@ def _build_social(date_str: str) -> dict:
 
 def _read_rollup(source: str, date_str: str) -> dict | None:
     path = DASHBOARD_HTML_DIR / "data" / "rollups" / source / f"{date_str}.json"
-    if not path.exists():
-        return None
-    with path.open() as f:
-        return json.load(f)
-
-
-def _read_series(source: str) -> dict | None:
-    path = DASHBOARD_HTML_DIR / "data" / "series" / f"{source}.json"
     if not path.exists():
         return None
     with path.open() as f:

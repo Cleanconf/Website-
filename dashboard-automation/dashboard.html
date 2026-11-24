@@ -509,8 +509,8 @@ function viewBusiness(){
       head: [StatTile({label:"Paying users now", src:"Stripe", value:d.paying.now == null ? null : String(d.paying.now), deltas:[
           {kind:"pct", better:"up", ...d.paying.vsLW, when:"vs LW", verdict:true},
           {kind:"pct", better:"up", ...d.paying.vsLM, when:"vs LM", verdict:true}]}),
-        ListTile("Paying users, last 12 months", "Stripe",
-            d.paying.trend12mo && d.paying.trend12mo.values.length > 1 ? TrendChart(d.paying.trend12mo.labels, d.paying.trend12mo.values, "Line chart of paying users by month") : `<p class="muted">Not enough history yet - needs at least two months of data.</p>`, "span2")] },
+        ListTile("Paying users, last 30 days", "Stripe",
+            d.paying.trend30d && d.paying.trend30d.values.length > 1 ? TrendChart(d.paying.trend30d.labels, d.paying.trend30d.values, "Line chart of paying users by day") : `<p class="muted">Not enough history yet - needs at least two days of data.</p>`, "span2")] },
     { id:"retention", title:"Churn and failed payments", short:"Churn", status:d.retention.status, srcs:["Stripe","PostHog webapp"],
       reason:d.retention.reason,
       head: [
@@ -584,13 +584,13 @@ function viewBeta(){
       reason:"Not measured yet - Client Effort Score needs an in-app survey (no source yet).",
       head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog webapp"), na("Speed to set up (median)","PostHog webapp")] },
     { id:"funnel", title:"Meeting Booking Conversion Rate (task funnel)", short:"Task funnel", status:"watch", srcs:["PostHog webapp"],
-      reason:"Not measured yet - needs a new PostHog query grouping tasks by outcome.",
-      head: [na("Tasks ticked through to paid","PostHog webapp")] },
+      reason:"Needs the app's own database (Firestore), not PostHog - linking one specific task through to one specific payment isn't something PostHog's anonymous events can do.",
+      head: [StatTile({label:"Tasks ticked through to paid", src:"PostHog webapp", value:"TBD", note:"Needs Firestore read access - a bigger decision, not just a new query"})] },
     { id:"recovery", title:"Payment recovery rate", short:"Recovery", status:"watch", srcs:["PostHog webapp"],
-      reason:"Lina reminders sent is measured below. Paid-within-7-days still needs a new query linking reminders to payments.",
+      reason:"Lina reminders sent is measured below. Paid-within-7-days needs the app's own database (Firestore), not PostHog - same reason as the task funnel.",
       head: [
         StatTile({label:"Lina reminders confirmed as sent, yesterday", src:"PostHog webapp", value:d.linaRemindersSentYesterday == null ? null : String(d.linaRemindersSentYesterday)}),
-        na("Paid within 7 days of a sent reminder","PostHog webapp")] },
+        StatTile({label:"Paid within 7 days of a sent reminder", src:"PostHog webapp", value:"TBD", note:"Needs Firestore read access - a bigger decision, not just a new query"})] },
     { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog webapp"],
       reason:"Payment recording is measured below. Dashboard sessions per user, per week still needs a new query.",
       head: [
@@ -603,7 +603,7 @@ function viewBeta(){
       head: [
         na("Churn: never used after sign-up","PostHog webapp"),
         StatTile({label:"Average session (dwell time), yesterday", src:"PostHog webapp", value:d.avgSessionSeconds == null ? null : dur(d.avgSessionSeconds)}),
-        na("Customer support messages, this week","PostHog webapp")] },
+        StatTile({label:"Customer support messages, this week", src:"PostHog webapp", value:"Placeholder", note:"Approach not finalized yet - WhatsApp conversations exported to a CSV and imported into PostHog. Shape of that import still to be worked out."})] },
     { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog webapp"],
       reason:"Payment acceptance/success rate and straight-through processing are measured below from Stripe. Onboarding cycle time still needs a new PostHog query.",
       head: [
