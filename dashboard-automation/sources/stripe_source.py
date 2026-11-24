@@ -107,10 +107,15 @@ def fetch_stripe_daily_raw(date_str: str) -> dict:
     charges = list(client.v1.charges.list({"created": created, "limit": 100}).auto_paging_iter())
     total_paying_users = sum(1 for _ in client.v1.subscriptions.list({"status": "active", "limit": 100}).auto_paging_iter())
 
+    # Stripe's objects support `[]` but not `.get()` (raises AttributeError -
+    # "Use .to_dict() to convert it"), and reduce_stripe_daily uses `.get()`
+    # for optional fields - converting to plain dicts here, once, keeps that
+    # function simple and (since it never touched the real SDK) fully
+    # testable with plain dict fixtures, which is how it's actually tested.
     return reduce_stripe_daily(
-        invoice_payment_succeeded=[e["data"]["object"] for e in succeeded_events],
-        invoice_payment_failed=[e["data"]["object"] for e in failed_events],
-        subscriptions_deleted=[e["data"]["object"] for e in deleted_events],
-        charges=charges,
+        invoice_payment_succeeded=[e["data"]["object"].to_dict() for e in succeeded_events],
+        invoice_payment_failed=[e["data"]["object"].to_dict() for e in failed_events],
+        subscriptions_deleted=[e["data"]["object"].to_dict() for e in deleted_events],
+        charges=[c.to_dict() for c in charges],
         total_paying_users=total_paying_users,
     )
