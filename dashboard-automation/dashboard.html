@@ -472,10 +472,10 @@ const Footer = () => `<footer class="footer"><span>Run usage: ${RUN_USAGE.claude
    ========================================================================== */
 function UsageMetrics(){
   return [
-    ListTile("Time of day (share of usage)", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
-    StatTile({label:"Total hours in app, this week", src:"PostHog", value:null}),
-    ListTile("Device", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
-    ListTile("Platform", "PostHog", `<p class="muted">${NA_VALUE}</p>`)
+    ListTile("Time of day (share of usage)", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`),
+    StatTile({label:"Total hours in app, this week", src:"PostHog webapp", value:null}),
+    ListTile("Device", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`),
+    ListTile("Platform", "PostHog webapp", `<p class="muted">${NA_VALUE}</p>`)
   ];
 }
 
@@ -486,21 +486,21 @@ function viewBusiness(){
   const d = D.business;
   if (!d) return { today:[], insights:[], sections:[] };
   const today = [
-    { label:"New trial sign-ups", src:"PostHog", kind:"abs", better:"up", fmt:int, ...d.today.newTrial },
+    { label:"New trial sign-ups", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, ...d.today.newTrial },
     { label:"New paid sign-ups", src:"Stripe", kind:"abs", better:"up", fmt:int, ...d.today.newPaid },
     { label:"Revenue", src:"Stripe", kind:"abs", better:"up", fmt:gbp, ...d.today.revenue },
     { label:"Failed payments", src:"Stripe", kind:"abs", better:"down", fmt:int, ...d.today.failedPayments },
-    { label:"Website visitors", src:"PostHog", kind:"pct", better:"up", fmt:int, v:null },
+    { label:"Website visitors", src:"PostHog website", kind:"pct", better:"up", fmt:int, v:null },
     { label:"Facebook + Instagram followers gained", src:"Meta", kind:"abs", better:"up", fmt:int, ...d.today.followersGained }
   ];
   const insights = d.insights;
   const wk = "This week to date", mo = "This month to date";
   const sections = [
-    { id:"growth", title:"Revenue and sign-ups", short:"Growth", status:d.growth.status, srcs:["Stripe","PostHog"],
+    { id:"growth", title:"Revenue and sign-ups", short:"Growth", status:d.growth.status, srcs:["Stripe","PostHog webapp"],
       reason:d.growth.reason,
       head: [
         PeriodTile({label:"Revenue", src:"Stripe", kind:"pct", better:"up", fmt:gbp, rows:[{lab:wk,...d.growth.revenue.week,cmp:"vs last week (LW)"},{lab:mo,...d.growth.revenue.month,cmp:"vs last month (LM)"}]}),
-        PeriodTile({label:"New trial sign-ups", src:"PostHog", kind:"pct", better:"up", fmt:int, rows:[{lab:wk,...d.growth.newTrial.week,cmp:"vs LW"},{lab:mo,...d.growth.newTrial.month,cmp:"vs LM"}]}),
+        PeriodTile({label:"New trial sign-ups", src:"PostHog webapp", kind:"pct", better:"up", fmt:int, rows:[{lab:wk,...d.growth.newTrial.week,cmp:"vs LW"},{lab:mo,...d.growth.newTrial.month,cmp:"vs LM"}]}),
         PeriodTile({label:"New paid sign-ups", src:"Stripe", kind:"pct", better:"up", fmt:int, rows:[{lab:wk,...d.growth.newPaid.week,cmp:"vs LW"},{lab:mo,...d.growth.newPaid.month,cmp:"vs LM"}]})
       ] },
     { id:"paying", title:"Total paying users", short:"Paying users", status:d.paying.status, srcs:["Stripe"],
@@ -510,17 +510,17 @@ function viewBusiness(){
           {kind:"pct", better:"up", ...d.paying.vsLM, when:"vs LM", verdict:true}]}),
         ListTile("Paying users, last 12 months", "Stripe",
             d.paying.trend12mo && d.paying.trend12mo.values.length > 1 ? TrendChart(d.paying.trend12mo.labels, d.paying.trend12mo.values, "Line chart of paying users by month") : `<p class="muted">Not enough history yet - needs at least two months of data.</p>`, "span2")] },
-    { id:"retention", title:"Churn and failed payments", short:"Churn", status:d.retention.status, srcs:["Stripe","PostHog"],
+    { id:"retention", title:"Churn and failed payments", short:"Churn", status:d.retention.status, srcs:["Stripe","PostHog webapp"],
       reason:d.retention.reason,
       head: [
         PeriodTile({label:"Churn (users who cancelled)", src:"Stripe", kind:"abs", better:"down", fmt:int, rows:[{lab:wk,...d.retention.churn.week,cmp:"vs LW"},{lab:mo,...d.retention.churn.month,cmp:"vs LM"}]}),
         PeriodTile({label:"Failed payments", src:"Stripe", kind:"abs", better:"down", fmt:int, rows:[{lab:wk,...d.retention.failedPayments.week,cmp:"vs LW"},{lab:mo,...d.retention.failedPayments.month,cmp:"vs LM"}]}),
         ListTile("Reasons for churn, yesterday", "Stripe", d.retention.churnReasons && d.retention.churnReasons.length ? BarList(d.retention.churnReasons) : `<p class="muted">${NA_VALUE} - no cancellations yesterday.</p>`)
       ] },
-    { id:"marketing", title:"Marketing channels", short:"Marketing", status:d.marketing.status, srcs:["PostHog","Stripe","Meta"], stale:d.marketing.stale,
+    { id:"marketing", title:"Marketing channels", short:"Marketing", status:d.marketing.status, srcs:["PostHog webapp","Stripe","Meta"], stale:d.marketing.stale,
       reason:d.marketing.reason,
       head: [
-        ListTile("Free trial sign-ups by channel", "PostHog", `<p class="muted">${NA_VALUE} - sign-up channel is not tracked yet.</p>`),
+        ListTile("Free trial sign-ups by channel", "PostHog webapp", `<p class="muted">${NA_VALUE} - sign-up channel is not tracked yet.</p>`),
         ListTile("Paid sign-ups by channel", "Stripe", `<p class="muted">${NA_VALUE} - sign-up channel is not tracked yet.</p>`),
         StatTile({label:"Reach across Facebook and Instagram, this week", src:"Meta", value:null, note:"Not public with the current Meta permissions"})
       ],
@@ -532,16 +532,16 @@ function viewBusiness(){
             Delta(change("abs", f.month.prev, f.month.cur), "up", "vs LM", false)])) : `<p class="muted">${NA_VALUE}</p>`, true),
         UsageMetrics()
       ] },
-    { id:"website", title:"Website", short:"Website", status:"watch", srcs:["PostHog"],
+    { id:"website", title:"Website", short:"Website", status:"watch", srcs:["PostHog website"],
       reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
       head: [
-        StatTile({label:"Total visitors since launch", src:"PostHog", value:null}),
-        StatTile({label:"New visitors", src:"PostHog", value:null}),
-        StatTile({label:"Total dwell time", src:"PostHog", value:null})
+        StatTile({label:"Total visitors since launch", src:"PostHog website", value:null}),
+        StatTile({label:"New visitors", src:"PostHog website", value:null}),
+        StatTile({label:"Total dwell time", src:"PostHog website", value:null})
       ],
       detail: [
-        ListTile("Most visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`),
-        ListTile("Least visited pages", "PostHog", `<p class="muted">${NA_VALUE}</p>`)
+        ListTile("Most visited pages", "PostHog website", `<p class="muted">${NA_VALUE}</p>`),
+        ListTile("Least visited pages", "PostHog website", `<p class="muted">${NA_VALUE}</p>`)
       ] }
   ];
   return { today, insights, sections };
@@ -562,39 +562,39 @@ function viewBusiness(){
    ========================================================================== */
 function viewBeta(){
   const today = [
-    { label:"Active beta users", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Tasks ticked as done", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Paid ticks", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Clients added", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null },
-    { label:"Lina reminders confirmed sent", src:"PostHog", kind:"abs", better:"up", fmt:int, v:null }
+    { label:"Active beta users", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Tasks ticked as done", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Paid ticks", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Clients added", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null },
+    { label:"Lina reminders confirmed sent", src:"PostHog webapp", kind:"abs", better:"up", fmt:int, v:null }
   ];
   const insights = [];
   const na = (label, src) => StatTile({label, src, value:null});
   const sections = [
-    { id:"health", title:"Beta health at a glance", short:"Health", status:"watch", srcs:["PostHog"],
+    { id:"health", title:"Beta health at a glance", short:"Health", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - needs new PostHog event queries.",
-      head: [na("Feature coverage","PostHog"), na("Set-up is quick (median time)","PostHog"), na("Users who don't drop off","PostHog")] },
-    { id:"usability", title:"Usability", short:"Usability", status:"watch", srcs:["PostHog"],
+      head: [na("Feature coverage","PostHog webapp"), na("Set-up is quick (median time)","PostHog webapp"), na("Users who don't drop off","PostHog webapp")] },
+    { id:"usability", title:"Usability", short:"Usability", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - Client Effort Score needs an in-app survey (no source yet).",
-      head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog"), na("Speed to set up (median)","PostHog")] },
-    { id:"funnel", title:"Meeting Booking Conversion Rate (task funnel)", short:"Task funnel", status:"watch", srcs:["PostHog"],
+      head: [na("Client Effort Score (CES), 1 to 7, 7 is easiest","PostHog webapp"), na("Speed to set up (median)","PostHog webapp")] },
+    { id:"funnel", title:"Meeting Booking Conversion Rate (task funnel)", short:"Task funnel", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - needs a new PostHog query grouping tasks by outcome.",
-      head: [na("Tasks ticked through to paid","PostHog")] },
-    { id:"recovery", title:"Payment recovery rate", short:"Recovery", status:"watch", srcs:["PostHog"],
+      head: [na("Tasks ticked through to paid","PostHog webapp")] },
+    { id:"recovery", title:"Payment recovery rate", short:"Recovery", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - needs a new PostHog query on payment_reminder_sent.",
-      head: [na("Lina reminders confirmed as sent","PostHog"), na("Paid within 7 days of a sent reminder","PostHog")] },
-    { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog"],
+      head: [na("Lina reminders confirmed as sent","PostHog webapp"), na("Paid within 7 days of a sent reminder","PostHog webapp")] },
+    { id:"adoption", title:"Feature adoption", short:"Adoption", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - needs new PostHog event queries.",
-      head: [na("Dashboard sessions per user, per week","PostHog"), na("Payment recording","PostHog")] },
-    { id:"overall", title:"Overall", short:"Overall", status:"watch", srcs:["PostHog"],
+      head: [na("Dashboard sessions per user, per week","PostHog webapp"), na("Payment recording","PostHog webapp")] },
+    { id:"overall", title:"Overall", short:"Overall", status:"watch", srcs:["PostHog webapp"],
       reason:"Not measured yet - needs new PostHog event queries. Accessibility and customer support messages have no source at all yet.",
-      head: [na("Churn: never used after sign-up","PostHog"), na("Average session (dwell time)","PostHog"), na("Customer support messages, this week","PostHog")] },
-    { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog"],
+      head: [na("Churn: never used after sign-up","PostHog webapp"), na("Average session (dwell time)","PostHog webapp"), na("Customer support messages, this week","PostHog webapp")] },
+    { id:"technical", title:"Technical", short:"Technical", status:"watch", srcs:["Stripe","PostHog webapp"],
       reason:"Payment acceptance/success rate and straight-through processing can be built from data already collected - just not wired into this page yet.",
-      head: [na("Payment acceptance and success rate","Stripe"), na("Straight-through processing rate","Stripe"), na("Onboarding cycle time","PostHog")] },
-    { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog"],
+      head: [na("Payment acceptance and success rate","Stripe"), na("Straight-through processing rate","Stripe"), na("Onboarding cycle time","PostHog webapp")] },
+    { id:"website", title:"Website traffic", short:"Website", status:"watch", srcs:["PostHog website"],
       reason:"Website tracking is moving to PostHog - not connected yet, no Google Analytics involved.",
-      head: [na("Visitors to the sign-up page","PostHog"), na("Sign-up page dwell time","PostHog")] }
+      head: [na("Visitors to the sign-up page","PostHog website"), na("Sign-up page dwell time","PostHog website")] }
   ];
   return { today, insights, sections };
 }
@@ -639,11 +639,12 @@ function viewSocial(){
    ========================================================================== */
 const VIEWS = {
   beta:{ label:"Beta", render:m => regroup(viewBeta(m), [
-    {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"}, {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}]) },
+    {id:"pwebapp", key:"PostHog webapp", short:"PostHog webapp", title:"PostHog webapp"}, {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"},
+    {id:"pwebsite", key:"PostHog website", short:"PostHog website", title:"PostHog website"}]) },
   social:{ label:"Social media", render:viewSocial },
   business:{ label:"Business", render:m => regroup(viewBusiness(m), [
-    {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}, {id:"posthog", key:"PostHog", short:"PostHog", title:"PostHog"},
-    {id:"meta", key:"Meta", short:"Meta", title:"Meta (Facebook and Instagram)"}]) } };
+    {id:"stripe", key:"Stripe", short:"Stripe", title:"Stripe"}, {id:"pwebapp", key:"PostHog webapp", short:"PostHog webapp", title:"PostHog webapp"},
+    {id:"pwebsite", key:"PostHog website", short:"PostHog website", title:"PostHog website"}, {id:"meta", key:"Meta", short:"Meta", title:"Meta (Facebook and Instagram)"}]) } };
 
 function Nav(m, current){
   const items = [{ id:"overview", name:"Overview", line:"What needs attention" }].concat(m.sections.map(s =>
