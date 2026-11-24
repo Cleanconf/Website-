@@ -1,0 +1,33 @@
+{
+  "flag_threshold_fraction": 0.15,
+  "targets": {
+    "churned_subscriptions": {
+      "direction": "lower_is_better",
+      "target": null
+    },
+    "failed_payments": {
+      "direction": "lower_is_better",
+      "target": null
+    },
+    "ig_followers": {
+      "direction": "higher_is_better",
+      "target": null
+    },
+    "new_paid_sign_ups": {
+      "direction": "higher_is_better",
+      "target": null
+    },
+    "new_trial_sign_ups": {
+      "direction": "higher_is_better",
+      "target": null
+    },
+    "page_followers": {
+      "direction": "higher_is_better",
+      "target": null
+    },
+    "revenue_pence": {
+      "direction": "higher_is_better",
+      "target": null
+    }
+  }
+}

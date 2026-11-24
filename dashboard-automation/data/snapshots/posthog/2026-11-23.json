@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-23",
+  "error": null,
+  "raw": {
+    "active_users": 0,
+    "cta_clicks": 0,
+    "new_trial_sign_ups": 0,
+    "sign_ups_by_channel": {}
+  },
+  "source": "posthog",
+  "status": "ok"
+}

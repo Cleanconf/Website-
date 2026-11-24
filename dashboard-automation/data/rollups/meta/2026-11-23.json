@@ -1,0 +1,62 @@
+{
+  "date": "2026-11-23",
+  "month_to_date": {
+    "ig_followers": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 23
+    },
+    "page_followers": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 15
+    }
+  },
+  "source": "meta",
+  "today": {
+    "ig_followers": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 23
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 23
+      }
+    },
+    "page_followers": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 15
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 15
+      }
+    }
+  },
+  "week_to_date": {
+    "ig_followers": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 23
+    },
+    "page_followers": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 15
+    }
+  }
+}

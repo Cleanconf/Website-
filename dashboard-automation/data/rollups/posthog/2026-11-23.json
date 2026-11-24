@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-23",
+  "month_to_date": {
+    "active_users": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "cta_clicks": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "new_trial_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    }
+  },
+  "source": "posthog",
+  "today": {
+    "active_users": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
+    "cta_clicks": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    },
+    "new_trial_sign_ups": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      }
+    }
+  },
+  "week_to_date": {
+    "active_users": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "cta_clicks": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "new_trial_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    }
+  }
+}

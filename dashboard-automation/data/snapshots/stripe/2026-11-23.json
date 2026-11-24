@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-23",
+  "error": null,
+  "raw": {
+    "churn_reasons": {},
+    "churned_subscriptions": 0,
+    "failed_payments": 0,
+    "new_paid_sign_ups": 1,
+    "payments_attempted": 0,
+    "payments_succeeded": 0,
+    "recovered_payments": 0,
+    "revenue_pence": 0,
+    "straight_through_payments": 1,
+    "total_paying_users": 0
+  },
+  "source": "stripe",
+  "status": "ok"
+}
