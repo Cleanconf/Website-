@@ -59,6 +59,23 @@ def _empty_week_month() -> dict:
     return {"week": {"cur": None, "prev": None}, "month": {"cur": None, "prev": None}}
 
 
+def _pct_breakdown(counts: dict | None) -> list[dict] | None:
+    """Turns a {label: count} breakdown into a sorted [{label, value}] of percentage shares. `None` when there's nothing to show rather than a misleading empty chart."""
+    if not counts:
+        return None
+    total = sum(counts.values())
+    if not total:
+        return None
+    return sorted(
+        ({"label": label, "value": round(count / total * 100, 1)} for label, count in counts.items()),
+        key=lambda row: -row["value"],
+    )
+
+
+def _hour_label(hour) -> str:
+    return f"{int(hour):02d}:00"
+
+
 def _pence_to_pounds(week_month: dict) -> dict:
     def _convert(value):
         return value / 100 if value is not None else None
@@ -120,6 +137,14 @@ def _build_business(date_str: str) -> dict:
     churn_reasons_raw = (stripe_range.get(date_str) or {}).get("churn_reasons") or {}
     churn_reasons = [{"label": k.replace("_", " ").capitalize(), "value": v} for k, v in churn_reasons_raw.items()] or None
 
+    today_posthog_for_usage = posthog_range.get(date_str) or {}
+    hour_breakdown = _pct_breakdown(today_posthog_for_usage.get("hour_of_day_counts"))
+    usage = {
+        "hourOfDay": [{**row, "label": _hour_label(row["label"])} for row in hour_breakdown] if hour_breakdown else None,
+        "device": _pct_breakdown(today_posthog_for_usage.get("device_type_counts")),
+        "platform": _pct_breakdown(today_posthog_for_usage.get("os_counts")),
+    }
+
     # Daily, not monthly: a 12-month chart needs 2 calendar months before it can draw
     # a line at all. Built from the same daily snapshots as everything else, this
     # shows a line from the second day of real data onward, and at OSO's current
@@ -179,6 +204,7 @@ def _build_business(date_str: str) -> dict:
             "status": "watch" if meta_followers_rows is None else "on",
             "stale": None,
             "followers": meta_followers_rows,
+            "usage": usage,
         }),
     }
 
@@ -228,6 +254,7 @@ def _build_beta(date_str: str) -> dict:
         "paymentRecordingRate": payment_recording_rate,
         "paymentRecordingCounts": {"paidTicks": paid_ticks, "tasksCreated": tasks_created},
         "linaRemindersSentYesterday": today_posthog.get("lina_reminders_sent"),
+        "sessionsPerUserWeekToDate": today_posthog.get("sessions_per_active_user_week_to_date"),
         "technical": {
             "acceptanceRate": acceptance_rate,
             "straightThroughRate": straight_through_rate,

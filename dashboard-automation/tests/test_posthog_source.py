@@ -2,8 +2,10 @@ from unittest.mock import patch
 
 from sources.posthog_source import (
     _average_session_seconds,
+    _count_breakdown,
     _count_event,
     _count_users_on_path,
+    _sessions_per_user_week_to_date,
     fetch_posthog_daily_raw,
 )
 
@@ -40,7 +42,32 @@ def test_average_session_seconds_none_when_no_sessions_in_window():
         assert _average_session_seconds("1 = 1") is None
 
 
+def test_count_breakdown_drops_null_key_but_keeps_falsy_value():
+    # hour 0 (midnight) is a legitimate grouping key and must survive - only
+    # a real null (nothing captured) should be dropped.
+    with patch("sources.posthog_source._run_hogql_query", return_value=[[0, 4], [9, 28], [None, 2]]):
+        assert _count_breakdown("toHour(timestamp)", "1 = 1") == {0: 4, 9: 28}
+
+
+def test_sessions_per_user_week_to_date_computes_ratio():
+    with patch("sources.posthog_source._run_hogql_query", return_value=[[12, 7]]):
+        assert _sessions_per_user_week_to_date("2026-11-23") == 1.7
+
+
+def test_sessions_per_user_week_to_date_none_when_no_active_users():
+    with patch("sources.posthog_source._run_hogql_query", return_value=[[0, 0]]):
+        assert _sessions_per_user_week_to_date("2026-11-23") is None
+
+
 def _fake_query(query: str) -> list[list]:
+    if "count(distinct properties.$session_id)" in query:
+        return [[12, 7]]
+    if "toHour" in query:
+        return [[9, 28], [15, 48]]
+    if "$device_type" in query:
+        return [["Mobile", 100], ["Desktop", 9]]
+    if "properties.$os" in query:
+        return [["iOS", 80], ["Windows", 27]]
     if "signupChannel" in query:
         return [["organic", 3], ["referral", 2]]
     if "trial_started" in query:
@@ -96,3 +123,7 @@ def test_fetch_posthog_daily_raw_shape():
         "Dashboard": 0,
     }
     assert raw["avg_session_seconds"] == 245.6
+    assert raw["hour_of_day_counts"] == {9: 28, 15: 48}
+    assert raw["device_type_counts"] == {"Mobile": 100, "Desktop": 9}
+    assert raw["os_counts"] == {"iOS": 80, "Windows": 27}
+    assert raw["sessions_per_active_user_week_to_date"] == 1.7
