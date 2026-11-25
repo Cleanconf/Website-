@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /internal-dashboard/
 
 Sitemap: https://osoorganised.co.uk/sitemap.xml

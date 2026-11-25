@@ -199,14 +199,16 @@ def run_dashboard_job(date_str: str | None = None, force: bool = False, dry_run:
 
     stale_sources = [s for s in DASHBOARD_SOURCES if source_statuses[s] == "stale"]
 
-    # No dashboard_url yet - there is no dashboard page at all (nothing in
-    # oso-frontend, nothing hosted anywhere). build_slack_message simply
-    # omits the "Open the dashboard" link when this is not set.
+    # Published alongside the usual data commit (see the workflow's "Publish
+    # to GitHub Pages" step) - unlisted (noindex, not linked from the public
+    # site) but not access-controlled yet. Temporary, until a login gate is
+    # in place.
     message = build_slack_message(
         date_str=date_str,
         stale_sources=stale_sources,
         claude_calls_used=claude_calls_used,
         claude_daily_cap=10,
+        dashboard_url="https://osoorganised.co.uk/internal-dashboard/",
     )
 
     posted = False
