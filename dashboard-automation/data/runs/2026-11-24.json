@@ -2,7 +2,7 @@
   "claude_calls_used": 0,
   "date": "2026-11-24",
   "dry_run": false,
-  "force": false,
+  "force": true,
   "slack_posted": true,
   "source_statuses": {
     "meta": "ok",
