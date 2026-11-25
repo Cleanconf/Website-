@@ -1,7 +1,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
-    "todayLabel": "Tuesday 24/11/2026",
-    "yesterdayLabel": "Monday 23/11/2026",
+    "todayLabel": "Wednesday 25/11/2026",
+    "yesterdayLabel": "Tuesday 24/11/2026",
     "runUsage": {
       "claudeCalls": 0
     }
@@ -10,26 +10,26 @@ window.DASHBOARD_DATA = {
     "today": {
       "newTrial": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "newPaid": {
-        "v": 1,
-        "d1": null,
+        "v": 0,
+        "d1": 1,
         "d7": null
       },
       "revenue": {
         "v": 0.0,
-        "d1": null,
+        "d1": 0.0,
         "d7": null
       },
       "failedPayments": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "followersGained": {
-        "v": null,
+        "v": 1,
         "d1": null,
         "d7": null
       }
@@ -80,11 +80,13 @@ window.DASHBOARD_DATA = {
         "from": null,
         "to": 0
       },
-      "trend12mo": {
+      "trend30d": {
         "labels": [
-          "11"
+          "23",
+          "24"
         ],
         "values": [
+          0,
           0
         ]
       },
@@ -133,46 +135,170 @@ window.DASHBOARD_DATA = {
         },
         {
           "channel": "Instagram",
-          "total": 23,
+          "total": 24,
           "week": {
-            "cur": 23,
+            "cur": 24,
             "prev": null
           },
           "month": {
-            "cur": 23,
+            "cur": 24,
             "prev": null
           }
         }
       ],
+      "usage": {
+        "hourOfDay": null,
+        "device": null,
+        "platform": null
+      },
       "reason": "On target - nothing needs attention here right now."
     }
   },
   "social": {
     "today": {
       "igFollowersGained": {
-        "v": null,
+        "v": 1,
         "d1": null,
         "d7": null
       },
       "igEngagementRate": {
-        "v": 4.3478260869565215,
+        "v": 8.333333333333332,
         "d1": null,
         "d7": null
       },
       "pageFollowersGained": {
-        "v": null,
+        "v": 0,
         "d1": null,
         "d7": null
       }
     },
     "insights": [],
+    "competitors": {
+      "competitors": [
+        {
+          "name": "ZenMaid",
+          "handle": "@get.zenmaid",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/get.zenmaid/",
+          "note": "Ranked first overall - near-daily posting, real owners on camera"
+        },
+        {
+          "name": "Squeegee",
+          "handle": "@squeeg.ee",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/squeeg.ee/",
+          "note": "About 2 posts a week"
+        },
+        {
+          "name": "CleanFlow",
+          "handle": "@getcleanflow",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/getcleanflow/",
+          "note": "Silent since 23/06/2026 - thin presence"
+        },
+        {
+          "name": "Fresha",
+          "handle": "@fresha",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/fresha/",
+          "note": "Format reference only - beauty marketplace, not a direct rival"
+        },
+        {
+          "name": "CleanRoster (Lee Berry)",
+          "handle": null,
+          "platform": "Facebook group posts",
+          "link": null,
+          "note": "Closest positioning to OSO - solo cleaner pricing argument vs ZenMaid. No Facebook Page found"
+        }
+      ],
+      "influencers": [
+        {
+          "name": "Doctor Dust",
+          "handle": "@doctordust.uk",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/doctordust.uk/",
+          "note": "Working London cleaner - learn, then engage"
+        },
+        {
+          "name": "DCBN (Domestic Cleaning Business Network)",
+          "handle": "@dcbn.uk",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/dcbn.uk/",
+          "note": "Trade association - partner or engage"
+        },
+        {
+          "name": "Ilze Whiteman, The Cleaning Coach",
+          "handle": null,
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/thecleaningcoach/",
+          "note": "Coaching for owners, mostly team-based"
+        },
+        {
+          "name": "Nicola Lewis",
+          "handle": "@thisgirlcanorganise",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/thisgirlcanorganise/",
+          "note": "Learn only - too large (226K)"
+        },
+        {
+          "name": "Cleaning with Mario",
+          "handle": "@cleaning_with_mario",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/cleaning_with_mario/",
+          "note": "Scotland - home hints and tips"
+        },
+        {
+          "name": "Mother_Rendall",
+          "handle": null,
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/mother_rendall/",
+          "note": "Scotland - householder audience"
+        },
+        {
+          "name": "Amanda Hughes",
+          "handle": "@amandahughes.uk",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/amandahughes.uk/",
+          "note": "Closest in size to OSO - engage, then partner"
+        },
+        {
+          "name": "Louise Brogan",
+          "handle": "@louisebrogan_",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/louisebrogan_/",
+          "note": "Belfast - small business visibility coaching"
+        },
+        {
+          "name": "Suz Bird, Bird & Emmy",
+          "handle": "@suzabird",
+          "platform": "Instagram",
+          "link": "https://www.instagram.com/suzabird/",
+          "note": "Fills the Scotland gap - engage"
+        },
+        {
+          "name": "Helen Young, Solo Cleaners Support",
+          "handle": null,
+          "platform": "Facebook group",
+          "link": "https://www.facebook.com/groups/solocleaners",
+          "note": "16.8K members - no ads/spam/DMs, engage openly first"
+        },
+        {
+          "name": "Ann Russell",
+          "handle": "@annrussell03",
+          "platform": "TikTok",
+          "link": "https://www.tiktok.com/@annrussell03",
+          "note": "3M followers - learn (format inspiration only)"
+        }
+      ],
+      "updated": "2026-11-19"
+    },
     "facebook": {
       "status": "watch",
       "reason": "Facebook best post, engagement rate and reach are not available with the current Meta permissions.",
       "followers": {
         "now": 15,
         "vsYesterday": {
-          "from": null,
+          "from": 15,
           "to": 15
         },
         "vsLastWeek": {
@@ -187,50 +313,50 @@ window.DASHBOARD_DATA = {
       "status": "on",
       "reason": "Instagram reach is not available with the current Meta permissions.",
       "followers": {
-        "now": 23,
+        "now": 24,
         "vsYesterday": {
-          "from": null,
-          "to": 23
+          "from": 23,
+          "to": 24
         },
         "vsLastWeek": {
           "from": null,
-          "to": 23
+          "to": 24
         }
       },
       "bestPost": {
         "comments": 0,
-        "image_url": "https://scontent-ord5-2.cdninstagram.com/v/t51.82787-15/902825765_17917158174493492_6792751301062491146_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0FST1VTRUxfSVRFTS5iZXN0X2ltYWdlX3VybGdlbi5DMyJ9&_nc_ohc=HIhVUpjysuYQ7kNvwFwy0oT&_nc_oc=AdpjtTzn5qz7BlhPybK-eoWrknYGnEOqvbM9yf57u3KuUdo8446h53-2LGV_t91mOI4&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=zpfwc6111h2-YzXf1wfXTw&_nc_ct=RQosPBUKFQIAAAA&oh=00_AQTuA7azDHr9GTtqfljuHOFtwdgGx31OmAAWbGUHlqtIxQ&oe=6B0B93D2",
-        "likes": 1,
-        "permalink": "https://www.instagram.com/p/DgFioxXFVjG/"
+        "image_url": "https://scontent-ord5-2.cdninstagram.com/v/t51.71878-15/927282833_2407295669805623_8204423740799082363_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzIifQ%3D%3D&_nc_ohc=URDv90ZT18kQ7kNvwEQNQyK&_nc_oc=AdrbeopNu_w_qaYJjmcI_0rblDs-N0q61dS6qX34YY9w6TG8uUOBPObf-VBlQ-l3gdg&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=3mY-z9VqIOZ4a2n65c6y2Q&_nc_tpa=Q5bMBQLpnXdOGGXunK_352ytYkoyImVcFiKPY9r_PNmx4kK2pnNoz8llR19PK_toq10AZpKZNXE8CiWHVg&_nc_ct=RQgsPBUKFQoAAAA&oh=00_AQTGDfciRZNOHhFRZjypL_iDXBKv5beJrcJ7wokIwXqxQQ&oe=6B0C6FC7",
+        "likes": 2,
+        "permalink": "https://www.instagram.com/reel/DgIFn9ukoiA/"
       },
-      "engagementRate": 0.043478260869565216
+      "engagementRate": 0.08333333333333333
     }
   },
   "beta": {
     "today": {
       "activeUsers": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "tasksTickedDone": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "paidTicks": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "clientsAdded": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       },
       "linaRemindersSent": {
         "v": 0,
-        "d1": null,
+        "d1": 0,
         "d7": null
       }
     },
@@ -243,9 +369,10 @@ window.DASHBOARD_DATA = {
       "tasksCreated": 0
     },
     "linaRemindersSentYesterday": 0,
+    "sessionsPerUserWeekToDate": null,
     "technical": {
       "acceptanceRate": null,
-      "straightThroughRate": 100.0
+      "straightThroughRate": null
     }
   }
 };

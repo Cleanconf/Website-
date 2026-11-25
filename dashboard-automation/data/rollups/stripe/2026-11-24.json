@@ -1,0 +1,244 @@
+{
+  "date": "2026-11-24",
+  "month_to_date": {
+    "churned_subscriptions": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "failed_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "new_paid_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "payments_attempted": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "payments_succeeded": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "recovered_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "revenue_pence": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "straight_through_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": null
+    },
+    "total_paying_users": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    }
+  },
+  "source": "stripe",
+  "today": {
+    "churned_subscriptions": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "failed_payments": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "new_paid_sign_ups": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": -1,
+        "change_percent": -100.0,
+        "previous_value": 1,
+        "value": 0
+      }
+    },
+    "payments_attempted": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "payments_succeeded": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "recovered_payments": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "revenue_pence": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    },
+    "straight_through_payments": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": -1,
+        "change_percent": -100.0,
+        "previous_value": 1,
+        "value": 0
+      }
+    },
+    "total_paying_users": {
+      "vs_last_week": {
+        "change": null,
+        "change_percent": null,
+        "previous_value": null,
+        "value": 0
+      },
+      "vs_yesterday": {
+        "change": 0,
+        "change_percent": null,
+        "previous_value": 0,
+        "value": 0
+      }
+    }
+  },
+  "week_to_date": {
+    "churned_subscriptions": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "failed_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "new_paid_sign_ups": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 1
+    },
+    "payments_attempted": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "payments_succeeded": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "recovered_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "revenue_pence": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    },
+    "straight_through_payments": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 1
+    },
+    "total_paying_users": {
+      "change": null,
+      "change_percent": null,
+      "previous_value": null,
+      "value": 0
+    }
+  }
+}

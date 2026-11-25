@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-24",
+  "error": null,
+  "raw": {
+    "ig_best_post": {
+      "comments": 0,
+      "image_url": "https://scontent-ord5-2.cdninstagram.com/v/t51.71878-15/927282833_2407295669805623_8204423740799082363_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzIifQ%3D%3D&_nc_ohc=URDv90ZT18kQ7kNvwEQNQyK&_nc_oc=AdrbeopNu_w_qaYJjmcI_0rblDs-N0q61dS6qX34YY9w6TG8uUOBPObf-VBlQ-l3gdg&_nc_zt=23&_nc_ht=scontent-ord5-2.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=3mY-z9VqIOZ4a2n65c6y2Q&_nc_tpa=Q5bMBQLpnXdOGGXunK_352ytYkoyImVcFiKPY9r_PNmx4kK2pnNoz8llR19PK_toq10AZpKZNXE8CiWHVg&_nc_ct=RQgsPBUKFQoAAAA&oh=00_AQTGDfciRZNOHhFRZjypL_iDXBKv5beJrcJ7wokIwXqxQQ&oe=6B0C6FC7",
+      "likes": 2,
+      "permalink": "https://www.instagram.com/reel/DgIFn9ukoiA/"
+    },
+    "ig_engagement_rate": 0.08333333333333333,
+    "ig_followers": 24,
+    "ig_reach": null,
+    "not_available_reasons": {
+      "ig_reach": "Instagram reach needs the instagram_manage_insights permission added to this token.",
+      "page_best_post": "Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.",
+      "page_engagement_rate": "Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.",
+      "page_reach": "Facebook Page reach/impressions: the Insights API call did not return a valid metric - needs further investigation."
+    },
+    "page_best_post": null,
+    "page_engagement_rate": null,
+    "page_followers": 15,
+    "page_reach": null
+  },
+  "source": "meta",
+  "status": "ok"
+}
