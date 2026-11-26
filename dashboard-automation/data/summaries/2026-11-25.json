@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-25",
+  "views": [
+    {
+      "actions": [],
+      "headline_metrics": [
+        {
+          "comparison": {
+            "change": 0,
+            "change_percent": null,
+            "previous_value": 0,
+            "value": 0
+          },
+          "formatted_value": "\u00a30.00",
+          "label": "Revenue",
+          "source": "stripe",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": 0,
+            "change_percent": null,
+            "previous_value": 0,
+            "value": 0
+          },
+          "formatted_value": "0",
+          "label": "New paid sign-ups",
+          "source": "stripe",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": 0,
+            "change_percent": null,
+            "previous_value": 0,
+            "value": 0
+          },
+          "formatted_value": "0",
+          "label": "New trial sign-ups",
+          "source": "posthog",
+          "status": "Watch"
+        }
+      ],
+      "notes": [],
+      "view": "business_overview",
+      "view_label": "Business overview"
+    },
+    {
+      "actions": [],
+      "headline_metrics": [
+        {
+          "comparison": {
+            "change": 0,
+            "change_percent": 0.0,
+            "previous_value": 15,
+            "value": 15
+          },
+          "formatted_value": "15",
+          "label": "Facebook followers",
+          "source": "meta",
+          "status": "Watch"
+        },
+        {
+          "comparison": {
+            "change": 1,
+            "change_percent": 4.166666666666666,
+            "previous_value": 24,
+            "value": 25
+          },
+          "formatted_value": "25",
+          "label": "Instagram followers",
+          "source": "meta",
+          "status": "Watch"
+        }
+      ],
+      "notes": [
+        "No Instagram post yesterday.",
+        "Not available yet: Facebook best post, Facebook reach, Instagram reach \u2014 Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.; Facebook Page reach/impressions: the Insights API call did not return a valid metric - needs further investigation.; Instagram reach needs the instagram_manage_insights permission added to this token."
+      ],
+      "view": "social_media",
+      "view_label": "Social media"
+    }
+  ]
+}

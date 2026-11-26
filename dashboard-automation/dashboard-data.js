@@ -1,7 +1,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
-    "todayLabel": "Wednesday 25/11/2026",
-    "yesterdayLabel": "Tuesday 24/11/2026",
+    "todayLabel": "Thursday 26/11/2026",
+    "yesterdayLabel": "Wednesday 25/11/2026",
     "runUsage": {
       "claudeCalls": 0
     }
@@ -15,7 +15,7 @@ window.DASHBOARD_DATA = {
       },
       "newPaid": {
         "v": 0,
-        "d1": 1,
+        "d1": 0,
         "d7": null
       },
       "revenue": {
@@ -83,9 +83,11 @@ window.DASHBOARD_DATA = {
       "trend30d": {
         "labels": [
           "23",
-          "24"
+          "24",
+          "25"
         ],
         "values": [
+          0,
           0,
           0
         ]
@@ -135,13 +137,13 @@ window.DASHBOARD_DATA = {
         },
         {
           "channel": "Instagram",
-          "total": 24,
+          "total": 25,
           "week": {
-            "cur": 24,
+            "cur": 25,
             "prev": null
           },
           "month": {
-            "cur": 24,
+            "cur": 25,
             "prev": null
           }
         }
@@ -162,7 +164,7 @@ window.DASHBOARD_DATA = {
         "d7": null
       },
       "igEngagementRate": {
-        "v": 8.333333333333332,
+        "v": null,
         "d1": null,
         "d7": null
       },
@@ -310,26 +312,21 @@ window.DASHBOARD_DATA = {
       "engagementRate": null
     },
     "instagram": {
-      "status": "on",
-      "reason": "Instagram reach is not available with the current Meta permissions.",
+      "status": "watch",
+      "reason": "No Instagram post yesterday.",
       "followers": {
-        "now": 24,
+        "now": 25,
         "vsYesterday": {
-          "from": 23,
-          "to": 24
+          "from": 24,
+          "to": 25
         },
         "vsLastWeek": {
           "from": null,
-          "to": 24
+          "to": 25
         }
       },
-      "bestPost": {
-        "comments": 0,
-        "image_url": "https://scontent-sea5-1.cdninstagram.com/v/t51.71878-15/927282833_2407295669805623_8204423740799082363_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=106&_nc_map=urlgen_bucketless&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=URDv90ZT18kQ7kNvwHO8JgM&_nc_oc=Adrr5-ZO3wkdlsh8iEODwhSmUyhnW14tw5YhUIZEk_bJcY_8mHtWq-OF-mmY9byh0ts&_nc_zt=23&_nc_ht=scontent-sea5-1.cdninstagram.com&edm=AFF3FJ0EAAAA&_nc_gid=jzNLaATndr2kbwaRbObx4Q&_nc_tpa=Q5bMBQKY15ycQ65MqXqqiNcjuGdNLmFpoCzmATUGqEQkG_Xb83VsNmoCsZ989RuAvCWyPGmpKtaM2Ca4LA&_nc_ct=RQosPBUKFQoAAAA&oh=00_AQSU9vnt_ZawwHeEhvrk7O76qftCItK-xN64Q3btTfhMrg&oe=6B0C6FC7",
-        "likes": 2,
-        "permalink": "https://www.instagram.com/reel/DgIFn9ukoiA/"
-      },
-      "engagementRate": 0.08333333333333333
+      "bestPost": null,
+      "engagementRate": null
     }
   },
   "beta": {
