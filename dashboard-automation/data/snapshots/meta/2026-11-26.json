@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-26",
+  "error": null,
+  "raw": {
+    "ig_best_post": null,
+    "ig_engagement_rate": null,
+    "ig_followers": 26,
+    "ig_reach": null,
+    "not_available_reasons": {
+      "ig_reach": "Instagram reach needs the instagram_manage_insights permission added to this token.",
+      "page_best_post": "Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.",
+      "page_engagement_rate": "Facebook Page posts/engagement need the pages_read_engagement permission (or Page Public Content Access) actually working for this token - check Meta Business Settings.",
+      "page_reach": "Facebook Page reach/impressions: the Insights API call did not return a valid metric - needs further investigation."
+    },
+    "page_best_post": null,
+    "page_engagement_rate": null,
+    "page_followers": 15,
+    "page_reach": null
+  },
+  "source": "meta",
+  "status": "ok"
+}

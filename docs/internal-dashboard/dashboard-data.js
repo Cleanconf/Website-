@@ -1,7 +1,7 @@
 window.DASHBOARD_DATA = {
   "meta": {
-    "todayLabel": "Thursday 26/11/2026",
-    "yesterdayLabel": "Wednesday 25/11/2026",
+    "todayLabel": "Friday 27/11/2026",
+    "yesterdayLabel": "Thursday 26/11/2026",
     "runUsage": {
       "claudeCalls": 0
     }
@@ -84,9 +84,11 @@ window.DASHBOARD_DATA = {
         "labels": [
           "23",
           "24",
-          "25"
+          "25",
+          "26"
         ],
         "values": [
+          0,
           0,
           0,
           0
@@ -137,13 +139,13 @@ window.DASHBOARD_DATA = {
         },
         {
           "channel": "Instagram",
-          "total": 25,
+          "total": 26,
           "week": {
-            "cur": 25,
+            "cur": 26,
             "prev": null
           },
           "month": {
-            "cur": 25,
+            "cur": 26,
             "prev": null
           }
         }
@@ -315,14 +317,14 @@ window.DASHBOARD_DATA = {
       "status": "watch",
       "reason": "No Instagram post yesterday.",
       "followers": {
-        "now": 25,
+        "now": 26,
         "vsYesterday": {
-          "from": 24,
-          "to": 25
+          "from": 25,
+          "to": 26
         },
         "vsLastWeek": {
           "from": null,
-          "to": 25
+          "to": 26
         }
       },
       "bestPost": null,
